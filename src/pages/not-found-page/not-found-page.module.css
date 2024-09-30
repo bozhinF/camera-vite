@@ -1,0 +1,6 @@
+.page {
+  block-size: 100svh;
+  display: grid;
+  place-items: center;
+  place-content: center;
+}
