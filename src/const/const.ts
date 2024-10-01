@@ -4,3 +4,10 @@ export enum AppRoute {
   Catalog = '/catalog',
   Product = '/product',
 }
+
+export const Crumb = {
+  Main: 'Главная',
+  Basket: 'Корзина',
+  Catalog: 'Каталог',
+  Product: 'Продукт',
+} as const;
