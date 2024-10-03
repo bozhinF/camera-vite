@@ -1,5 +1,6 @@
 import Banner from '../../components/banner/banner';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import ProductCard from '../../components/product-card/product-card';
 
 function CatalogPage(): JSX.Element {
   return (
@@ -127,6 +128,7 @@ function CatalogPage(): JSX.Element {
               </form>
             </div>*/}
                 <div className="cards catalog__cards">
+                  <ProductCard />
                   <div className="product-card">
                     <div className="product-card__img">
                       <picture>
