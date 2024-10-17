@@ -1,13 +1,39 @@
+import { useState } from 'react';
 import Banner from '../../components/banner/banner';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import ProductCard from '../../components/product-card/product-card';
 import { useAppSelector } from '../../hooks';
 import { getAllProducts } from '../../store/products-slice/selectors';
+import Portal from '../../components/portal/portal';
+import CallItemModal from '../../components/call-item-modal/call-item-modal';
+import { Product } from '../../types/types';
 
 function CatalogPage(): JSX.Element {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [callItem, setCallItem] = useState<Product | null>(null);
   const products = useAppSelector(getAllProducts);
+
+  const handleBuyButtonClick = (product: Product) => {
+    setIsModalOpen(true);
+    setCallItem(product);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setCallItem(null);
+  };
+
   return (
     <main>
+      {isModalOpen && (
+        <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
+          <CallItemModal
+            callItem={callItem}
+            onCloseButtonClick={handleModalClose}
+          />
+        </Portal>
+      )}
+
       <Banner />
       <div className="page-content">
         <Breadcrumbs />
@@ -132,7 +158,11 @@ function CatalogPage(): JSX.Element {
             </div>*/}
                 <div className="cards catalog__cards">
                   {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onBuyButtonClick={handleBuyButtonClick}
+                    />
                   ))}
                 </div>
                 {/*<div class="pagination">

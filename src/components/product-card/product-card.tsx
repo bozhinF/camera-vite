@@ -3,9 +3,13 @@ import StarsRating from '../stars-rating/stars-rating';
 
 type ProductCardProps = {
   product: Product;
+  onBuyButtonClick: (product: Product) => void;
 };
 
-function ProductCard({ product }: ProductCardProps): JSX.Element {
+function ProductCard({
+  product,
+  onBuyButtonClick,
+}: ProductCardProps): JSX.Element {
   const {
     name,
     price,
@@ -45,7 +49,11 @@ function ProductCard({ product }: ProductCardProps): JSX.Element {
         </p>
       </div>
       <div className="product-card__buttons">
-        <button className="btn btn--purple product-card__btn" type="button">
+        <button
+          onClick={() => onBuyButtonClick(product)}
+          className="btn btn--purple product-card__btn"
+          type="button"
+        >
           Купить
         </button>
         <a className="btn btn--transparent" href="#">
