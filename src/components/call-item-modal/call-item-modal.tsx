@@ -3,6 +3,7 @@ import { Product } from '../../types/types';
 import SomethingWrongModal from '../something-wrong-modal/something-wrong-modal';
 import { useElementListener } from '../../hooks/use-element-listener';
 import { useWindowListener } from '../../hooks/use-window-listener';
+import PhoneInput from '../phone-input/phone-input';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -105,25 +106,7 @@ function CallItemModal({
           </p>
         </div>
       </div>
-      <div className="custom-input form-review__item">
-        <label>
-          <span className="custom-input__label">
-            Телефон
-            <svg width={9} height={9} aria-hidden="true">
-              <use xlinkHref="#icon-snowflake" />
-            </svg>
-          </span>
-          <input
-            autoFocus
-            type="tel"
-            name="user-tel"
-            placeholder="Введите ваш номер"
-            required
-            ref={phoneInputRef}
-          />
-        </label>
-        <p className="custom-input__error">Нужно указать номер</p>
-      </div>
+      <PhoneInput />
       <div className="modal__buttons">
         <button
           className="btn btn--purple modal__btn modal__btn--fit-width"
