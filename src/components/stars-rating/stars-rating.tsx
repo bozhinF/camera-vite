@@ -1,11 +1,15 @@
 const RATING_STARS_COUNT = 5;
 type StarsRatingProps = {
   rating: number;
-  reviewCount: number;
+  reviewCount?: number;
 };
 function StarsRating({ rating, reviewCount }: StarsRatingProps): JSX.Element {
   return (
-    <div className="rate product-card__rate">
+    <div
+      className={`rate ${
+        reviewCount ? 'product-card__rate' : 'review-card__rate'
+      }`}
+    >
       {Array.from({ length: RATING_STARS_COUNT }, (_, i) => i + 1).map(
         (number) => (
           <svg key={number} width={17} height={16} aria-hidden="true">
@@ -15,11 +19,15 @@ function StarsRating({ rating, reviewCount }: StarsRatingProps): JSX.Element {
           </svg>
         )
       )}
-      <p className="visually-hidden">Рейтинг: {rating}</p>
-      <p className="rate__count">
-        <span className="visually-hidden">Всего оценок:</span>
-        {reviewCount}
+      <p className="visually-hidden">
+        {`${reviewCount ? 'Рейтинг' : 'Оценка'}: ${rating}`}
       </p>
+      {reviewCount && (
+        <p className="rate__count">
+          <span className="visually-hidden">Всего оценок:</span>
+          {reviewCount}
+        </p>
+      )}
     </div>
   );
 }

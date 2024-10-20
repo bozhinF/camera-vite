@@ -2,7 +2,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { AppRoute, Crumb } from '../../const/const';
 import { capitalize } from '../../util/util';
 
-function Breadcrumbs(): JSX.Element {
+type BreadcrumbsProps = {
+  tip?: string;
+};
+
+function Breadcrumbs({ tip }: BreadcrumbsProps): JSX.Element {
   const { pathname } = useLocation();
   const pathnames = pathname.split('/').filter(Boolean);
 
@@ -35,7 +39,7 @@ function Breadcrumbs(): JSX.Element {
               <li key={crumb} className="breadcrumbs__item">
                 {isLast ? (
                   <span className="breadcrumbs__link breadcrumbs__link--active">
-                    {crumbName}
+                    {tip ? tip : crumbName}
                   </span>
                 ) : (
                   <Link className="breadcrumbs__link" to={routeTo}>

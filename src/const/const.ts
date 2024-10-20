@@ -2,7 +2,7 @@ export enum AppRoute {
   Main = '/',
   Basket = '/basket',
   Catalog = '/catalog',
-  Product = '/product',
+  Product = '/catalog/:id',
 }
 
 export const Crumb = {
@@ -25,4 +25,5 @@ export enum NameSpace {
 
 export enum Endpoint {
   Products = '/cameras',
+  Comments = '/cameras/:cameraId/reviews',
 }

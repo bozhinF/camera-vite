@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Product } from '../../types/types';
 import StarsRating from '../stars-rating/stars-rating';
+import { AppRoute } from '../../const/const';
 
 type ProductCardProps = {
   product: Product;
@@ -11,6 +13,7 @@ function ProductCard({
   onBuyButtonClick,
 }: ProductCardProps): JSX.Element {
   const {
+    id,
     name,
     price,
     rating,
@@ -56,9 +59,12 @@ function ProductCard({
         >
           Купить
         </button>
-        <a className="btn btn--transparent" href="#">
+        <Link
+          className="btn btn--transparent"
+          to={`${AppRoute.Product.replace(':id', String(id))}`}
+        >
           Подробнее
-        </a>
+        </Link>
       </div>
     </div>
   );
