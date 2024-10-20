@@ -22,6 +22,10 @@ export const getProductDetailsStatus = (
 //   state: Pick<State, NameSpace.Products>
 // ): RequestStatus => state[NameSpace.Products].productReviewsStatus;
 
-export const getproductReviews = (
+export const getProductReviews = (
   state: Pick<State, NameSpace.Products>
 ): Reviews => state[NameSpace.Products].productReviews;
+
+export const getPostOrderStatus = (
+  state: Pick<State, NameSpace.Products>
+): RequestStatus => state[NameSpace.Products].postOrderStatus;

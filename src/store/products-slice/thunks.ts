@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Product, Products, Reviews } from '../../types/types';
+import { Order, Product, Products, Reviews } from '../../types/types';
 import { AxiosInstance } from 'axios';
 import { Endpoint } from '../../const/const';
 
@@ -30,4 +30,12 @@ export const fetchProductReviews = createAsyncThunk<
     `${Endpoint.Comments.replace(':cameraId', id)}`
   );
   return response.data;
+});
+
+export const postOrder = createAsyncThunk<
+  void,
+  { order: Order },
+  { extra: AxiosInstance }
+>('postProduct/order', async ({ order }, { extra: api }) => {
+  await api.post(Endpoint.Orders, order);
 });

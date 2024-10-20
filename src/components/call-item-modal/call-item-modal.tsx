@@ -1,9 +1,11 @@
-import { useRef } from 'react';
-import { Product } from '../../types/types';
+import { useRef, useState } from 'react';
+import { Order, Product } from '../../types/types';
 import SomethingWrongModal from '../something-wrong-modal/something-wrong-modal';
 import { useElementListener } from '../../hooks/use-element-listener';
 import { useWindowListener } from '../../hooks/use-window-listener';
 import PhoneInput from '../phone-input/phone-input';
+import { useAppDispatch } from '../../hooks';
+import { postOrder } from '../../store/products-slice/thunks';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -14,9 +16,25 @@ function CallItemModal({
   callItem,
   onCloseButtonClick,
 }: CallItemModalProps): JSX.Element {
+  const dispatch = useAppDispatch();
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [isInputWarn, setIsInputWarn] = useState(false);
+  const [isBuyButtonDisabled, setIsBuyButtonDisabled] = useState(false);
   const pressedKeys = new Set();
+
+  const onPhoneInputChange = (
+    isValid: boolean,
+    unmaskedPhone: string
+  ): void => {
+    setIsPhoneValid(isValid);
+    setPhone(unmaskedPhone);
+    if (isValid && isInputWarn) {
+      setIsInputWarn(false);
+    }
+  };
 
   const handleKeyUp = (event: KeyboardEvent) => pressedKeys.delete(event.key);
   const handleKeyDow = (event: KeyboardEvent) => pressedKeys.add(event.key);
@@ -57,6 +75,7 @@ function CallItemModal({
   }
 
   const {
+    id,
     name,
     vendorCode,
     type,
@@ -106,11 +125,35 @@ function CallItemModal({
           </p>
         </div>
       </div>
-      <PhoneInput />
+      <PhoneInput
+        isWarn={isInputWarn}
+        onPhoneInputChange={onPhoneInputChange}
+      />
       <div className="modal__buttons">
         <button
           className="btn btn--purple modal__btn modal__btn--fit-width"
           type="button"
+          disabled={isBuyButtonDisabled}
+          onClick={() => {
+            if (!isPhoneValid) {
+              setIsInputWarn(true);
+              return;
+            }
+
+            setIsBuyButtonDisabled(true);
+            const order: Order = {
+              camerasIds: [id],
+              coupon: null,
+              tel: phone,
+            };
+            dispatch(postOrder({ order }))
+              .unwrap()
+              .then(
+                () => onCloseButtonClick(),
+                () => setIsInputWarn(true)
+              )
+              .finally(() => setIsBuyButtonDisabled(false));
+          }}
         >
           <svg width={24} height={16} aria-hidden="true">
             <use xlinkHref="#icon-add-basket" />

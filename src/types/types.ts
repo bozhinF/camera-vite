@@ -29,3 +29,9 @@ export type Review = {
 };
 
 export type Reviews = Review[];
+
+export type Order = {
+  camerasIds: number[];
+  coupon: string | null;
+  tel?: string;
+};

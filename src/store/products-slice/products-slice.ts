@@ -1,7 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace, RequestStatus } from '../../const/const';
 import { Product, Products, Reviews } from '../../types/types';
-import { fetchAllProducts, fetchProduct, fetchProductReviews } from './thunks';
+import {
+  fetchAllProducts,
+  fetchProduct,
+  fetchProductReviews,
+  postOrder,
+} from './thunks';
 
 type ProductsState = {
   allProductsStatus: RequestStatus;
@@ -10,6 +15,7 @@ type ProductsState = {
   productDetails: Product | null;
   productReviewsStatus: RequestStatus;
   productReviews: Reviews;
+  postOrderStatus: RequestStatus;
 };
 
 const initialState: ProductsState = {
@@ -19,6 +25,7 @@ const initialState: ProductsState = {
   productDetails: null,
   productReviewsStatus: RequestStatus.Idle,
   productReviews: [],
+  postOrderStatus: RequestStatus.Idle,
 };
 
 export const productsSlice = createSlice({
@@ -56,5 +63,14 @@ export const productsSlice = createSlice({
       })
       .addCase(fetchProductReviews.rejected, (state) => {
         state.productReviewsStatus = RequestStatus.Failed;
+      })
+      .addCase(postOrder.pending, (state) => {
+        state.postOrderStatus = RequestStatus.Loading;
+      })
+      .addCase(postOrder.fulfilled, (state) => {
+        state.postOrderStatus = RequestStatus.Success;
+      })
+      .addCase(postOrder.rejected, (state) => {
+        state.postOrderStatus = RequestStatus.Failed;
       }),
 });

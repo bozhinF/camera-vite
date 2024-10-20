@@ -8,7 +8,7 @@ import {
 import {
   getProductDetails,
   getProductDetailsStatus,
-  getproductReviews,
+  getProductReviews,
 } from '../../store/products-slice/selectors';
 import { RequestStatus } from '../../const/const';
 import Loader from '../../components/loader/loader';
@@ -31,7 +31,7 @@ function ProductPage(): JSX.Element {
 
   const productDetails = useAppSelector(getProductDetails);
   const productDetailsStatus = useAppSelector(getProductDetailsStatus);
-  const productReviews = useAppSelector(getproductReviews);
+  const productReviews = useAppSelector(getProductReviews);
 
   if (
     productDetailsStatus === RequestStatus.Loading ||

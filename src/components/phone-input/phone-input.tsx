@@ -1,6 +1,11 @@
 import IMask, { InputMask } from 'imask';
 import { useEffect, useRef, useState } from 'react';
 
+type PhoneInputProps = {
+  isWarn: boolean;
+  onPhoneInputChange: (isValid: boolean, unmaskedPhone: string) => void;
+};
+
 const MASK_OPTIONS = {
   mask: '{+7}({9}00)000-00-00',
   prepare: (input: string) => {
@@ -12,7 +17,10 @@ const MASK_OPTIONS = {
   },
 };
 
-function PhoneInput(): JSX.Element {
+function PhoneInput({
+  isWarn,
+  onPhoneInputChange,
+}: PhoneInputProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [mask, setMask] = useState<InputMask | null>(null);
 
@@ -32,8 +40,22 @@ function PhoneInput(): JSX.Element {
     };
   }, [mask]);
 
+  useEffect(() => {
+    if (mask) {
+      mask.on('accept', () => {
+        onPhoneInputChange(false, mask.unmaskedValue);
+      });
+
+      mask.on('complete', () => {
+        onPhoneInputChange(true, mask.unmaskedValue);
+      });
+    }
+  });
+
   return (
-    <div className="custom-input form-review__item">
+    <div
+      className={`custom-input form-review__item ${isWarn ? 'is-invalid' : ''}`}
+    >
       <label>
         <span className="custom-input__label">
           Телефон
