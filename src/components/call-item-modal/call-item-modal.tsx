@@ -18,18 +18,19 @@ function CallItemModal({
 }: CallItemModalProps): JSX.Element {
   const dispatch = useAppDispatch();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const buyButtonRef = useRef<HTMLButtonElement>(null);
   const [isPhoneValid, setIsPhoneValid] = useState(false);
   const [phone, setPhone] = useState('');
   const [isInputWarn, setIsInputWarn] = useState(false);
   const [isBuyButtonDisabled, setIsBuyButtonDisabled] = useState(false);
-  const pressedKeys = new Set();
-
   const [firstFocused, setFirstFocused] = useState<HTMLInputElement | null>(
     null
   );
   const [lastFocused, setLastFocused] = useState<HTMLButtonElement | null>(
     null
   );
+
+  const pressedKeys = new Set();
 
   useEffect(() => {
     if (closeButtonRef.current) {
@@ -58,7 +59,7 @@ function CallItemModal({
       return;
     }
 
-    if (document.activeElement === lastFocused) {
+    if (document.activeElement === lastFocused && event.key === 'Tab') {
       event.preventDefault();
       firstFocused.focus();
     }
@@ -84,26 +85,54 @@ function CallItemModal({
     }
   };
 
+  const handleBuyButtonClick = () => {
+    if (!isPhoneValid) {
+      setIsInputWarn(true);
+      return;
+    }
+
+    if (!callItem) {
+      return;
+    }
+
+    setIsBuyButtonDisabled(true);
+    const { id } = callItem;
+    const order: Order = {
+      camerasIds: [id],
+      coupon: null,
+      tel: phone,
+    };
+    dispatch(postOrder({ order }))
+      .unwrap()
+      .then(
+        () => onCloseButtonClick(),
+        () => setIsInputWarn(true)
+      )
+      .finally(() => setIsBuyButtonDisabled(false));
+  };
+
+  useElementListener('click', closeButtonRef, onCloseButtonClick);
+  useElementListener('click', buyButtonRef, handleBuyButtonClick);
   useWindowListener('keyup', closeButtonRef, handleKeyUp);
   useWindowListener('keydown', closeButtonRef, handleKeyDow);
+
   useWindowListener(
     'keydown',
     closeButtonRef,
     handleFirstFocusableElementShiftTabDown
   );
+
   useWindowListener(
     'keydown',
     closeButtonRef,
     handleLastFocusableElementTabDown
   );
-  useElementListener('click', closeButtonRef, onCloseButtonClick);
 
   if (callItem === null) {
     return <SomethingWrongModal onCloseButtonClick={onCloseButtonClick} />;
   }
 
   const {
-    id,
     name,
     vendorCode,
     type,
@@ -164,26 +193,7 @@ function CallItemModal({
           className="btn btn--purple modal__btn modal__btn--fit-width"
           type="button"
           disabled={isBuyButtonDisabled}
-          onClick={() => {
-            if (!isPhoneValid) {
-              setIsInputWarn(true);
-              return;
-            }
-
-            setIsBuyButtonDisabled(true);
-            const order: Order = {
-              camerasIds: [id],
-              coupon: null,
-              tel: phone,
-            };
-            dispatch(postOrder({ order }))
-              .unwrap()
-              .then(
-                () => onCloseButtonClick(),
-                () => setIsInputWarn(true)
-              )
-              .finally(() => setIsBuyButtonDisabled(false));
-          }}
+          ref={buyButtonRef}
         >
           <svg width={24} height={16} aria-hidden="true">
             <use xlinkHref="#icon-add-basket" />
