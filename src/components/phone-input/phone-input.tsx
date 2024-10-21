@@ -2,8 +2,10 @@ import IMask, { InputMask } from 'imask';
 import { useEffect, useRef, useState } from 'react';
 
 type PhoneInputProps = {
+  autofocus?: boolean;
   isWarn: boolean;
   onPhoneInputChange: (isValid: boolean, unmaskedPhone: string) => void;
+  setFirstFocused?: (el: HTMLInputElement) => void;
 };
 
 const MASK_OPTIONS = {
@@ -18,8 +20,10 @@ const MASK_OPTIONS = {
 };
 
 function PhoneInput({
+  autofocus = false,
   isWarn,
   onPhoneInputChange,
+  setFirstFocused,
 }: PhoneInputProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [mask, setMask] = useState<InputMask | null>(null);
@@ -52,6 +56,12 @@ function PhoneInput({
     }
   });
 
+  useEffect(() => {
+    if (inputRef.current && setFirstFocused) {
+      setFirstFocused(inputRef.current);
+    }
+  });
+
   return (
     <div
       className={`custom-input form-review__item ${isWarn ? 'is-invalid' : ''}`}
@@ -64,7 +74,7 @@ function PhoneInput({
           </svg>
         </span>
         <input
-          autoFocus
+          autoFocus={autofocus}
           type="tel"
           name="user-tel"
           placeholder="Введите ваш номер"

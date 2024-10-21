@@ -17,6 +17,7 @@ import Tabs from '../../components/tabs/tabs';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import StarsRating from '../../components/stars-rating/stars-rating';
 import ReviewsList from '../../components/reviews-list/reviews-list';
+import { Helmet } from 'react-helmet-async';
 
 function ProductPage(): JSX.Element {
   const { id } = useParams();
@@ -58,6 +59,9 @@ function ProductPage(): JSX.Element {
   return (
     <>
       <main>
+        <Helmet>
+          <title>Продукт - Фотошоп</title>
+        </Helmet>
         <div className="page-content">
           <Breadcrumbs tip={name} />
           <div className="page-content__section">

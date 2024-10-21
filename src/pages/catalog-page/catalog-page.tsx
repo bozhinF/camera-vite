@@ -7,6 +7,7 @@ import { getAllProducts } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
 import CallItemModal from '../../components/call-item-modal/call-item-modal';
 import { Product } from '../../types/types';
+import { Helmet } from 'react-helmet-async';
 
 function CatalogPage(): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +26,9 @@ function CatalogPage(): JSX.Element {
 
   return (
     <main>
+      <Helmet>
+        <title>Каталог - Фотошоп</title>
+      </Helmet>
       {isModalOpen && (
         <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
           <CallItemModal

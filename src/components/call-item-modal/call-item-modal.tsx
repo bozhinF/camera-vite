@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Order, Product } from '../../types/types';
 import SomethingWrongModal from '../something-wrong-modal/something-wrong-modal';
-import { useElementListener } from '../../hooks/use-element-listener';
 import { useWindowListener } from '../../hooks/use-window-listener';
 import PhoneInput from '../phone-input/phone-input';
 import { useAppDispatch } from '../../hooks';
 import { postOrder } from '../../store/products-slice/thunks';
+import { useElementListener } from '../../hooks/use-element-listener';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -17,13 +17,25 @@ function CallItemModal({
   onCloseButtonClick,
 }: CallItemModalProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const phoneInputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [isPhoneValid, setIsPhoneValid] = useState(false);
   const [phone, setPhone] = useState('');
   const [isInputWarn, setIsInputWarn] = useState(false);
   const [isBuyButtonDisabled, setIsBuyButtonDisabled] = useState(false);
   const pressedKeys = new Set();
+
+  const [firstFocused, setFirstFocused] = useState<HTMLInputElement | null>(
+    null
+  );
+  const [lastFocused, setLastFocused] = useState<HTMLButtonElement | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (closeButtonRef.current) {
+      setLastFocused(closeButtonRef.current);
+    }
+  }, [closeButtonRef]);
 
   const onPhoneInputChange = (
     isValid: boolean,
@@ -39,18 +51,20 @@ function CallItemModal({
   const handleKeyUp = (event: KeyboardEvent) => pressedKeys.delete(event.key);
   const handleKeyDow = (event: KeyboardEvent) => pressedKeys.add(event.key);
 
-  const handleCloseButtonTabDown = (event: KeyboardEvent) => {
+  const handleLastFocusableElementTabDown = (event: KeyboardEvent) => {
     pressedKeys.add(event.key);
 
-    if (pressedKeys.size > 1 || event.key !== 'Tab') {
+    if (!firstFocused || !lastFocused || pressedKeys.size > 1) {
       return;
     }
 
-    event.preventDefault();
-    phoneInputRef.current?.focus();
+    if (document.activeElement === lastFocused) {
+      event.preventDefault();
+      firstFocused.focus();
+    }
   };
 
-  const handleInputShiftTabDown = (event: KeyboardEvent) => {
+  const handleFirstFocusableElementShiftTabDown = (event: KeyboardEvent) => {
     const trackedKeys = ['Tab', 'Shift'];
     pressedKeys.add(event.key);
 
@@ -60,14 +74,28 @@ function CallItemModal({
       }
     }
 
-    event.preventDefault();
-    closeButtonRef.current?.focus();
+    if (firstFocused === null || lastFocused === null) {
+      return;
+    }
+
+    if (document.activeElement === firstFocused) {
+      event.preventDefault();
+      lastFocused.focus();
+    }
   };
 
-  useWindowListener('keyup', phoneInputRef, handleKeyUp);
-  useWindowListener('keydown', phoneInputRef, handleKeyDow);
-  useElementListener('keydown', phoneInputRef, handleInputShiftTabDown);
-  useElementListener('keydown', closeButtonRef, handleCloseButtonTabDown);
+  useWindowListener('keyup', closeButtonRef, handleKeyUp);
+  useWindowListener('keydown', closeButtonRef, handleKeyDow);
+  useWindowListener(
+    'keydown',
+    closeButtonRef,
+    handleFirstFocusableElementShiftTabDown
+  );
+  useWindowListener(
+    'keydown',
+    closeButtonRef,
+    handleLastFocusableElementTabDown
+  );
   useElementListener('click', closeButtonRef, onCloseButtonClick);
 
   if (callItem === null) {
@@ -126,8 +154,10 @@ function CallItemModal({
         </div>
       </div>
       <PhoneInput
+        autofocus
         isWarn={isInputWarn}
         onPhoneInputChange={onPhoneInputChange}
+        setFirstFocused={setFirstFocused}
       />
       <div className="modal__buttons">
         <button
