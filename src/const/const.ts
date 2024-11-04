@@ -2,7 +2,7 @@ export enum AppRoute {
   Main = '/',
   Basket = '/basket',
   Catalog = '/catalog',
-  Product = '/catalog/:id',
+  Product = '/catalog/product/:id',
 }
 
 export const Crumb = {
@@ -21,6 +21,7 @@ export enum RequestStatus {
 
 export enum NameSpace {
   Products = 'PRODUCTS',
+  Filter = 'FILTER',
 }
 
 export enum Endpoint {
@@ -28,3 +29,18 @@ export enum Endpoint {
   Comments = '/cameras/:cameraId/reviews',
   Orders = '/orders',
 }
+
+export const filterOptions = {
+  sort: [
+    { id: 'sortPrice', title: 'по цене', value: 'price' },
+    {
+      id: 'sortPopular',
+      title: 'по популярности',
+      value: 'popular',
+    },
+  ],
+  order: [
+    { id: 'up', title: 'По возрастанию', value: 'up' },
+    { id: 'down', title: 'По убыванию', value: 'down' },
+  ],
+};
