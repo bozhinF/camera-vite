@@ -1,3 +1,5 @@
+import { FitlerOptions } from '../types/types';
+
 export enum AppRoute {
   Main = '/',
   Basket = '/basket',
@@ -9,7 +11,6 @@ export const Crumb = {
   Main: 'Главная',
   Basket: 'Корзина',
   Catalog: 'Каталог',
-  Product: 'Продукт',
 } as const;
 
 export enum RequestStatus {
@@ -30,7 +31,7 @@ export enum Endpoint {
   Orders = '/orders',
 }
 
-export const filterOptions = {
+export const filterOptions: FitlerOptions = {
   sort: [
     { id: 'sortPrice', title: 'по цене', value: 'price' },
     {
@@ -42,5 +43,26 @@ export const filterOptions = {
   order: [
     { id: 'up', title: 'По возрастанию', value: 'up' },
     { id: 'down', title: 'По убыванию', value: 'down' },
+  ],
+  price: [{ id: 'price', title: 'от', value: '' }],
+  priceUp: [{ id: 'priceUp', title: 'до', value: '' }],
+  category: [
+    { id: 'photocamera', title: 'Фотокамера', value: 'photocamera' },
+    { id: 'videocamera', title: 'Видеокамера', value: 'videocamera' },
+  ],
+  type: [
+    { id: 'digital', title: 'Цифровая', value: 'digital' },
+    { id: 'film', title: 'Плёночная', value: 'film' },
+    { id: 'snapshot', title: 'Моментальная', value: 'snapshot' },
+    { id: 'collection', title: 'Коллекционная', value: 'collection' },
+  ],
+  level: [
+    { id: 'zero', title: 'Нулевой', value: 'zero' },
+    {
+      id: 'non-professional',
+      title: 'Любительский',
+      value: 'non-professional',
+    },
+    { id: 'professional', title: 'Профессиональный', value: 'professional' },
   ],
 };

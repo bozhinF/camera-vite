@@ -30,11 +30,14 @@ function Breadcrumbs({ tip }: BreadcrumbsProps): JSX.Element {
           </li>
           {pathnames.map((crumb, index) => {
             crumb = capitalize(crumb);
+            const isCrumbExist = crumb in Crumb;
+            const isLast = index === pathnames.length - 1;
+            if (!isCrumbExist && !isLast) {
+              return;
+            }
             const crumbName =
               crumb in Crumb ? Crumb[crumb as keyof typeof Crumb] : crumb;
-
             const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-            const isLast = index === pathnames.length - 1;
             return (
               <li key={crumb} className="breadcrumbs__item">
                 {isLast ? (

@@ -18,10 +18,6 @@ export const getProductDetailsStatus = (
   state: Pick<State, NameSpace.Products>
 ): RequestStatus => state[NameSpace.Products].productDetailsStatus;
 
-// export const getProductReviewsStatus = (
-//   state: Pick<State, NameSpace.Products>
-// ): RequestStatus => state[NameSpace.Products].productReviewsStatus;
-
 export const getProductReviews = (
   state: Pick<State, NameSpace.Products>
 ): Reviews => state[NameSpace.Products].productReviews;
