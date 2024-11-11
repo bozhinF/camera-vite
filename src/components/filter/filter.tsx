@@ -20,6 +20,16 @@ function Filter({ filterState, onChange }: FilterProps): JSX.Element {
     .map((product) => product.price)
     .sort((a, b) => a - b);
 
+  const handleResetButtonClick = () => {
+    const resetParams = Object.keys(filterState).map(
+      (filterItem): updateURLProps[number] => ({
+        param: filterItem,
+        action: 'delete',
+      })
+    );
+    onChange(resetParams);
+  };
+
   return (
     <div className="catalog-filter">
       <form action="#">
@@ -58,7 +68,11 @@ function Filter({ filterState, onChange }: FilterProps): JSX.Element {
           state={filterState.level ? filterState.level : []}
         />
 
-        <button className="btn catalog-filter__reset-btn" type="reset">
+        <button
+          className="btn catalog-filter__reset-btn"
+          type="reset"
+          onClick={handleResetButtonClick}
+        >
           Сбросить фильтры
         </button>
       </form>
