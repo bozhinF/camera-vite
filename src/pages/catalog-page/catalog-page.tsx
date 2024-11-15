@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getAllProducts } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
 import CallItemModal from '../../components/call-item-modal/call-item-modal';
-import { Product, updateURLProps } from '../../types/types';
+import { Product, Products, updateURLProps } from '../../types/types';
 import { Helmet } from 'react-helmet-async';
 import Sort from '../../components/sort/sort';
 import Filter from '../../components/filter/filter';
@@ -18,6 +18,7 @@ import {
   initialState,
   setFilters,
 } from '../../store/filter-slice/filter-slice';
+import { filter, getTitleByValue, sort } from '../../util/util';
 
 function CatalogPage(): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +29,70 @@ function CatalogPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const isMounted = useRef(false);
   const location = useLocation();
+
+  const selectedFilterOptions = Object.entries(filterState).reduce(
+    (acc: string[], [key, value]) => {
+      if (value === null) {
+        return acc;
+      }
+      if (Array.isArray(value) && !value.length) {
+        return acc;
+      }
+      if (!(key in filter)) {
+        return acc;
+      }
+      return [...acc, key];
+    },
+    []
+  );
+
+  const filteredProducts = selectedFilterOptions.reduce(
+    (acc: Products, option) => {
+      if (option === 'price' && filterState.price && filterState.priceUp) {
+        return filter.price(acc, {
+          from: +filterState.price,
+          to: +filterState.priceUp,
+        });
+      }
+      if (option === 'category' && filterState.category) {
+        const category = getTitleByValue(
+          filterOptions,
+          option,
+          filterState.category
+        );
+        if (category !== null && !Array.isArray(category)) {
+          return filter.category(acc, category);
+        }
+        return acc;
+      }
+      if (option === 'type') {
+        const types = getTitleByValue(filterOptions, option, filterState.type);
+        if (types !== null && Array.isArray(types) && types.length) {
+          return filter.type(acc, types);
+        }
+        return acc;
+      }
+      if (option === 'level') {
+        const levels = getTitleByValue(
+          filterOptions,
+          option,
+          filterState.level
+        );
+        if (levels !== null && Array.isArray(levels) && levels.length) {
+          return filter.level(acc, levels);
+        }
+        return acc;
+      }
+      return acc;
+    },
+    products
+  );
+  const sortValue = filterState.sort;
+  const orderValue = filterState.order;
+  const sortedProducts = sort[sortValue as 'price' | 'popular'](
+    filteredProducts,
+    orderValue as 'up' | 'down'
+  );
 
   const updateURL = (data: updateURLProps) => {
     data.forEach(({ param, prop, action }) => {
@@ -140,12 +205,16 @@ function CatalogPage(): JSX.Element {
             <div className="page-content__columns">
               <div className="catalog__aside">
                 <img src="img/banner.png" />
-                <Filter filterState={filterState} onChange={updateURL} />
+                <Filter
+                  filterState={filterState}
+                  filteredProducts={filteredProducts}
+                  onChange={updateURL}
+                />
               </div>
               <div className="catalog__content">
                 <Sort filterState={filterState} onSortChange={updateURL} />
                 <div className="cards catalog__cards">
-                  {products.map((product) => (
+                  {sortedProducts.map((product) => (
                     <ProductCard
                       key={product.id}
                       product={product}

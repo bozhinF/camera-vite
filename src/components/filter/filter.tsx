@@ -1,22 +1,24 @@
-import { useAppSelector } from '../../hooks';
 import { filterOptions } from '../../const/const';
-import { getAllProducts } from '../../store/products-slice/selectors';
 import FilterPrice from '../filter-price/filter-price';
 import FilterCheckList from '../filter-check-list/filter-check-list';
 import { FilterState } from '../../store/filter-slice/filter-slice';
-import { updateURLProps } from '../../types/types';
+import { Products, updateURLProps } from '../../types/types';
 
 type FilterProps = {
   filterState: FilterState;
+  filteredProducts: Products;
   onChange: (data: updateURLProps) => void;
 };
 
-function Filter({ filterState, onChange }: FilterProps): JSX.Element {
+function Filter({
+  filterState,
+  filteredProducts,
+  onChange,
+}: FilterProps): JSX.Element {
   const filterPrice = filterState.price ? +filterState.price : null;
   const filterPriceUp = filterState.priceUp ? +filterState.priceUp : null;
 
-  const allProducts = useAppSelector(getAllProducts);
-  const prices = allProducts
+  const prices = filteredProducts
     .map((product) => product.price)
     .sort((a, b) => a - b);
 
@@ -47,7 +49,7 @@ function Filter({ filterState, onChange }: FilterProps): JSX.Element {
           name="category"
           items={filterOptions.category}
           onChange={onChange}
-          state={filterState.category ? [filterState.category] : []}
+          totalState={filterState}
         />
 
         <FilterCheckList
@@ -56,7 +58,7 @@ function Filter({ filterState, onChange }: FilterProps): JSX.Element {
           name="type"
           items={filterOptions.type}
           onChange={onChange}
-          state={filterState.type ? filterState.type : []}
+          totalState={filterState}
         />
 
         <FilterCheckList
@@ -65,7 +67,7 @@ function Filter({ filterState, onChange }: FilterProps): JSX.Element {
           name="level"
           items={filterOptions.level}
           onChange={onChange}
-          state={filterState.level ? filterState.level : []}
+          totalState={filterState}
         />
 
         <button

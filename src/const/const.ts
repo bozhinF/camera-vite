@@ -47,7 +47,7 @@ export const filterOptions: FitlerOptions = {
   price: [{ id: 'price', title: 'от', value: '' }],
   priceUp: [{ id: 'priceUp', title: 'до', value: '' }],
   category: [
-    { id: 'photocamera', title: 'Фотокамера', value: 'photocamera' },
+    { id: 'photocamera', title: 'Фотоаппарат', value: 'photocamera' },
     { id: 'videocamera', title: 'Видеокамера', value: 'videocamera' },
   ],
   type: [

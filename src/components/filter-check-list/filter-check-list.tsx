@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { FilterOptionsItem, UpdateUrl } from '../../types/types';
+import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type FilterCheckListProps = {
   type: 'radio' | 'checkbox';
   title: string;
-  name: string;
+  name: keyof FilterState;
   items: FilterOptionsItem;
   onChange: UpdateUrl;
-  state: string[];
+  totalState: FilterState;
 };
 
 function FilterCheckList({
@@ -16,59 +17,93 @@ function FilterCheckList({
   name,
   items,
   onChange,
-  state,
+  totalState,
 }: FilterCheckListProps): JSX.Element {
-  const [checkedItems, setCheckedItems] = useState<string[]>(state);
+  const localState = totalState[name];
+  const [checkedItems, setCheckedItems] =
+    useState<FilterState[keyof FilterState]>(localState);
+
+  const isvideocameraChecked = totalState.category === 'videocamera';
 
   useEffect(() => {
-    if (type === 'checkbox') {
-      if (state.length !== checkedItems.length) {
-        setCheckedItems(state);
-        return;
-      }
+    if (!Array.isArray(localState) && localState !== checkedItems) {
+      setCheckedItems(localState);
+      return;
+    }
+    if (
+      Array.isArray(localState) &&
+      Array.isArray(checkedItems) &&
+      localState.length !== checkedItems.length
+    ) {
+      setCheckedItems(localState);
+      return;
+    }
 
-      const sortedState = [...state].sort((a, b) => a.localeCompare(b));
+    if (Array.isArray(localState) && Array.isArray(checkedItems)) {
+      const sortedState = [...localState].sort((a, b) => a.localeCompare(b));
       const sortedCheckedItems = [...checkedItems].sort((a, b) =>
         a.localeCompare(b)
       );
       const isArraysEqual =
         sortedState.toString() === sortedCheckedItems.toString();
       if (!isArraysEqual) {
-        setCheckedItems(state);
+        setCheckedItems(localState);
       }
     }
-  }, [state, checkedItems, type]);
+  }, [checkedItems, localState, type]);
 
   const handleInputChange = (
     item: FilterOptionsItem[number],
     isActive: boolean
   ) => {
     if (type === 'radio') {
-      setCheckedItems([item.value]);
-      onChange([{ param: name, prop: item.value, action: 'set' }]);
+      setCheckedItems(item.value);
+      onChange([
+        { param: name, prop: item.value, action: 'set' },
+        { param: 'type', prop: 'film', action: 'delete' },
+        { param: 'type', prop: 'snapshot', action: 'delete' },
+      ]);
       return;
     }
     if (isActive) {
-      setCheckedItems((prev) => {
-        const index = prev.findIndex((element) => element === item.value);
-        if (index === -1) {
-          return prev;
-        }
-        const result = [...prev.slice(0, index), ...prev.slice(index + 1)];
-        return result;
-      });
-      onChange([{ param: name, prop: item.value, action: 'delete' }]);
-      return;
+      if (Array.isArray(checkedItems)) {
+        setCheckedItems((prev) => {
+          const typedPrev = prev as string[];
+          const index = typedPrev.findIndex(
+            (element) => element === item.value
+          );
+          if (index === -1) {
+            return typedPrev;
+          }
+          const result = [
+            ...typedPrev.slice(0, index),
+            ...typedPrev.slice(index + 1),
+          ];
+          return result;
+        });
+        onChange([{ param: name, prop: item.value, action: 'delete' }]);
+        return;
+      }
     }
-    setCheckedItems((prev) => [...prev, item.value]);
-    onChange([{ param: name, prop: item.value, action: 'append' }]);
+    if (Array.isArray(checkedItems)) {
+      setCheckedItems((prev) => {
+        const typedPrev = prev as string[];
+        return [...typedPrev, item.value];
+      });
+      onChange([{ param: name, prop: item.value, action: 'append' }]);
+    }
   };
 
   return (
     <fieldset className="catalog-filter__block">
       <legend className="title title--h5">{title}</legend>
       {items.map((item) => {
-        const isActive = checkedItems.includes(item.value);
+        const isActive =
+          checkedItems === item.value ||
+          (Array.isArray(checkedItems) && checkedItems.includes(item.value));
+        const isDisabled =
+          isvideocameraChecked &&
+          (item.id === 'snapshot' || item.id === 'film');
         return (
           <div key={item.id} className={`custom-${type} catalog-filter__item`}>
             <label>
@@ -78,6 +113,7 @@ function FilterCheckList({
                 {...(type === 'radio' ? { value: item.value } : {})}
                 checked={isActive}
                 onChange={() => handleInputChange(item, isActive)}
+                disabled={isDisabled}
               />
               <span className={`custom-${type}__icon`}></span>
               <span className={`custom-${type}__label`}>{item.title}</span>
