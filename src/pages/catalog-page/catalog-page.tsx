@@ -19,6 +19,7 @@ import {
   setFilters,
 } from '../../store/filter-slice/filter-slice';
 import { filter, getTitleByValue, sort } from '../../util/util';
+import Pagination from '../../components/pagination/pagination';
 
 function CatalogPage(): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +30,10 @@ function CatalogPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const isMounted = useRef(false);
   const location = useLocation();
+
+  const MAX_PRODUCTS_CARD_ON_PAGE = 9;
+  const countPages = Math.ceil(products.length / MAX_PRODUCTS_CARD_ON_PAGE);
+  const currentPage = +filterState.page;
 
   const selectedFilterOptions = Object.entries(filterState).reduce(
     (acc: string[], [key, value]) => {
@@ -94,6 +99,11 @@ function CatalogPage(): JSX.Element {
     orderValue as 'up' | 'down'
   );
 
+  const currentPageProducts = sortedProducts.slice(
+    MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1),
+    MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1) + MAX_PRODUCTS_CARD_ON_PAGE
+  );
+
   const updateURL = (data: updateURLProps) => {
     data.forEach(({ param, prop, action }) => {
       if (prop) {
@@ -106,7 +116,19 @@ function CatalogPage(): JSX.Element {
   };
 
   useEffect(() => {
+    const deleteInvalidParams = (data: { param: string; prop?: string }[]) => {
+      data.forEach(({ param, prop }) => {
+        if (prop) {
+          searchParams.delete(param, prop);
+          return;
+        }
+        searchParams.delete(param);
+      });
+      setSearchParams(searchParams.toString(), { replace: true });
+    };
+
     const currentFilter: FilterState = { ...filterState };
+    const deletedProps: { param: string; prop?: string }[] = [];
     let isNeedToUpdate = false;
     if (!location.search) {
       Object.entries(currentFilter).forEach(([key, value]) => {
@@ -132,21 +154,54 @@ function CatalogPage(): JSX.Element {
           isNeedToUpdate = true;
         }
 
-        const isValidParam = filterOptions[key].some((item) => {
-          if (item.id === 'price' || item.id === 'priceUp') {
-            return true;
-          }
-          return item.value === param;
-        });
+        let isValidParam = true;
+        if (key !== 'page' && key !== 'tab') {
+          isValidParam = filterOptions[key].some((item) => {
+            if (item.id === 'price' || item.id === 'priceUp') {
+              return true;
+            }
+            return item.value === param;
+          });
+        }
+
+        if (!isValidParam && param !== null) {
+          deletedProps.push({ param: key, prop: param });
+        }
 
         if (
           isValidParam &&
           currentFilter[key] !== param &&
           key !== 'type' &&
-          key !== 'level'
+          key !== 'level' &&
+          key !== 'tab' &&
+          key !== 'page'
         ) {
           isNeedToUpdate = true;
           currentFilter[key] = String(param);
+        }
+        if (key === 'page') {
+          if (param) {
+            currentFilter.page = param;
+            isNeedToUpdate = true;
+          } else {
+            if (currentFilter.page !== '1') {
+              currentFilter.page = '1';
+              isNeedToUpdate = true;
+            }
+          }
+        }
+        if (key === 'tab') {
+          if (param) {
+            if (currentFilter.tab !== param) {
+              currentFilter.tab = param;
+              isNeedToUpdate = true;
+            }
+          } else {
+            if (currentFilter.tab !== 'Characteristics') {
+              currentFilter.tab = 'Characteristics';
+              isNeedToUpdate = true;
+            }
+          }
         }
         if (key === 'type' || key === 'level') {
           const allParams = params.getAll(key);
@@ -168,9 +223,12 @@ function CatalogPage(): JSX.Element {
     if (isNeedToUpdate) {
       dispatch(setFilters(currentFilter));
     }
+    if (deletedProps.length) {
+      deleteInvalidParams(deletedProps);
+    }
 
     isMounted.current = true;
-  }, [dispatch, filterState, location.search]);
+  }, [dispatch, filterState, location.search, searchParams, setSearchParams]);
 
   const handleBuyButtonClick = (product: Product) => {
     setIsModalOpen(true);
@@ -214,7 +272,7 @@ function CatalogPage(): JSX.Element {
               <div className="catalog__content">
                 <Sort filterState={filterState} onSortChange={updateURL} />
                 <div className="cards catalog__cards">
-                  {sortedProducts.map((product) => (
+                  {currentPageProducts.map((product) => (
                     <ProductCard
                       key={product.id}
                       product={product}
@@ -222,18 +280,11 @@ function CatalogPage(): JSX.Element {
                     />
                   ))}
                 </div>
-                {/*<div class="pagination">
-              <ul class="pagination__list">
-                <li class="pagination__item"><a class="pagination__link pagination__link&#45;&#45;active" href="1">1</a>
-                </li>
-                <li class="pagination__item"><a class="pagination__link" href="2">2</a>
-                </li>
-                <li class="pagination__item"><a class="pagination__link" href="3">3</a>
-                </li>
-                <li class="pagination__item"><a class="pagination__link pagination__link&#45;&#45;text" href="2">Далее</a>
-                </li>
-              </ul>
-            </div>*/}
+                <Pagination
+                  currentPage={currentPage}
+                  countPages={countPages}
+                  onChange={updateURL}
+                />
               </div>
             </div>
           </div>

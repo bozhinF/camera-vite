@@ -1,4 +1,4 @@
-import { FitlerOptions, Products, Reviews } from '../types/types';
+import { Entries, FitlerOptions, Products, Reviews } from '../types/types';
 
 export const capitalize = (string: string): string =>
   string[0].toUpperCase() + string.slice(1);
@@ -61,3 +61,49 @@ export const sort = {
     return [...products].sort((a, b) => b.rating - a.rating);
   },
 };
+
+export function getObjectValue<T extends object, K extends keyof T>(
+  obj: T,
+  key: string | null
+): T[K] {
+  if (key !== null && key in obj) {
+    const typedKey = key as K;
+    return obj[typedKey];
+  }
+  return Object.values(obj)[0] as T[K];
+}
+export function getObjectValues<T extends object, K extends keyof T>(
+  obj: T
+): T[K][] {
+  const keys = Object.keys(obj) as K[];
+  return keys.map((key) => obj[key]);
+}
+export function getObjectKey<T extends object, K extends keyof T>(
+  obj: T,
+  key: string
+) {
+  if (key in obj) {
+    return key as K;
+  }
+  return Object.keys(obj)[0] as K;
+}
+
+export function getObjectKeys<T extends object, K extends keyof T>(obj: T) {
+  return Object.keys(obj) as K[];
+}
+
+// export function getEntries<>
+
+export function getTypedObjectKey<
+  T extends Record<K, unknown>,
+  K extends keyof T
+>(obj: T, key: K): K | undefined {
+  if (key in obj) {
+    return key; // здесь ключ уже имеет литеральный тип
+  }
+  return undefined;
+}
+
+export function getObjectEntries<T extends object>(object: T): Entries<T> {
+  return Object.entries(object) as Entries<T>;
+}

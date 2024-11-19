@@ -59,3 +59,7 @@ export type updateURLProps = {
 }[];
 
 export type UpdateUrl = (data: updateURLProps) => void;
+
+export type Entries<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];

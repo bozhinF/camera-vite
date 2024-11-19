@@ -9,6 +9,8 @@ export type FilterState = {
   category: string | null;
   type: string[];
   level: string[];
+  page: string;
+  tab: string;
 };
 
 export const initialState: FilterState = {
@@ -19,6 +21,8 @@ export const initialState: FilterState = {
   category: null,
   type: [],
   level: [],
+  page: '1',
+  tab: 'Characteristics',
 };
 
 export const filterSlice = createSlice({
@@ -33,6 +37,8 @@ export const filterSlice = createSlice({
       state.category = action.payload.category;
       state.type = action.payload.type;
       state.level = action.payload.level;
+      state.page = action.payload.page;
+      state.tab = action.payload.tab;
     },
   },
 });
