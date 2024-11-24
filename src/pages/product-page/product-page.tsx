@@ -146,6 +146,11 @@ function ProductPage(): JSX.Element {
     previewImgWebp2x,
   } = productDetails;
 
+  window.scrollTo({
+    top: 0,
+    left: 0,
+  });
+
   return (
     <>
       <main>
