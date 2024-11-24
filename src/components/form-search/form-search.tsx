@@ -15,6 +15,7 @@ function FormSearch(): JSX.Element {
   const allProducts = useAppSelector(getAllProducts);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const ulRef = useRef<HTMLUListElement>(null);
   const [searchInput, setSearchInput] = useState('');
   const [isInputActive, setInputActive] = useState(false);
 
@@ -62,13 +63,55 @@ function FormSearch(): JSX.Element {
     inputRef.current?.focus();
   };
 
+  const handleArrowKeyDown: React.KeyboardEventHandler<HTMLFormElement> = (
+    event
+  ) => {
+    const target = event.target as HTMLElement;
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (
+        target.classList.contains('form-search__select-item') &&
+        target.previousElementSibling
+      ) {
+        const previous = target.previousElementSibling as HTMLElement;
+        previous.focus();
+      }
+      if (
+        target.classList.contains('form-search__select-item') &&
+        !target.previousElementSibling
+      ) {
+        const inputElement = inputRef.current;
+        if (inputElement) {
+          inputElement.focus();
+        }
+      }
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (target === inputRef.current) {
+        const firstListItem = ulRef.current?.firstChild;
+        if (firstListItem) {
+          const firstListItemElement = firstListItem as HTMLLIElement;
+          firstListItemElement.focus();
+        }
+      }
+      if (
+        target.classList.contains('form-search__select-item') &&
+        target.nextElementSibling
+      ) {
+        const next = target.nextElementSibling as HTMLElement;
+        next.focus();
+      }
+    }
+  };
+
   return (
     <div
       className={`form-search ${searchInput ? 'list-opened' : ''}`}
       onFocus={handleFormSearchFocus}
       onBlur={handleFormSearchBlur}
     >
-      <form>
+      <form onKeyDown={handleArrowKeyDown}>
         <label>
           <svg
             className="form-search__icon"
@@ -95,6 +138,7 @@ function FormSearch(): JSX.Element {
               paddingRight: '4px',
               overflow: 'auto',
             }}
+            ref={ulRef}
           >
             {filteredProducts.map(({ name, id }) => {
               const route = `${AppRoute.Product.replace(':id', String(id))}`;
@@ -105,8 +149,7 @@ function FormSearch(): JSX.Element {
                   className="form-search__select-item"
                   tabIndex={0}
                   onClick={() => handleSelectItemClick(route)}
-                  onKeyDown={(event) =>
-                    handleSelectItemEnterKeyDown(event, route)}
+                  onKeyDown={(event) => handleSelectItemEnterKeyDown(event, route)}
                 >
                   {name}
                 </li>
