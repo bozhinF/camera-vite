@@ -1,45 +1,58 @@
 import { useState } from 'react';
-import { Product } from '../../types/types';
+import { Product, SetFilterStateOptions } from '../../types/types';
+import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type TabsProps = {
   product: Product;
+  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
+  filterState: FilterState;
 };
 
-enum TabItem {
-  Characteristics = 'Характеристики',
-  Description = 'Описание',
-}
+const TabItem = {
+  Characteristics: { title: 'Характеристики', value: 'characteristics' },
+  Description: { title: 'Описание', value: 'description' },
+} as const;
 
-function Tabs({ product }: TabsProps): JSX.Element {
+function Tabs({ product, onChange, filterState }: TabsProps): JSX.Element {
   const { vendorCode, category, type, level, description } = product;
 
-  const [active, setActive] = useState<TabItem>(
-    Object.keys(TabItem)[0] as TabItem
-  );
+  const activeTab =
+    Object.values(TabItem).find((item) => item.value === filterState.tab) ||
+    TabItem.Characteristics;
+  const [active, setActive] =
+    useState<(typeof TabItem)[keyof typeof TabItem]>(activeTab);
 
   const handleTabClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const button = event.target as HTMLButtonElement;
-    const tabType = button.dataset.tabType;
+    const tabType = Object.values(TabItem).find(
+      ({ value }) => value === button.dataset.tabType
+    );
     if (tabType === undefined) {
       return;
     }
-    setActive(tabType as TabItem);
+    setActive(tabType);
+    onChange({ ...filterState }, [{ key: 'tab', value: tabType.value }]);
   };
 
   return (
     <div className="tabs product__tabs">
       <div className="tabs__controls product__tabs-controls">
-        {Object.entries(TabItem).map(([key, value]) => (
+        {Object.values(TabItem).map(({ title, value }) => (
           <button
-            className={`tabs__control ${active === key ? 'is-active' : ''}`}
-            key={key}
-            data-tab-type={key}
+            className={`tabs__control ${
+              active.value === value ? 'is-active' : ''
+            }`}
+            key={value}
+            data-tab-type={value}
             type="button"
             onClick={handleTabClick}
           >
-            {value}
+            {title}
           </button>
         ))}
       </div>
@@ -47,7 +60,7 @@ function Tabs({ product }: TabsProps): JSX.Element {
       <div className="tabs__content">
         <div
           className={`tabs__element ${
-            active === (Object.keys(TabItem)[0] as TabItem) ? 'is-active' : ''
+            active === TabItem.Characteristics ? 'is-active' : ''
           }`}
         >
           <ul className="product__tabs-list">
@@ -71,7 +84,7 @@ function Tabs({ product }: TabsProps): JSX.Element {
         </div>
         <div
           className={`tabs__element ${
-            active === (Object.keys(TabItem)[1] as TabItem) ? 'is-active' : ''
+            active === TabItem.Description ? 'is-active' : ''
           }`}
         >
           <div className="product__tabs-text">

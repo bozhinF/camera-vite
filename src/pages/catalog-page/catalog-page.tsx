@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Banner from '../../components/banner/banner';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import ProductCard from '../../components/product-card/product-card';
@@ -6,7 +6,12 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getAllProducts } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
 import CallItemModal from '../../components/call-item-modal/call-item-modal';
-import { Product, Products, updateURLProps } from '../../types/types';
+import {
+  Product,
+  Products,
+  SetFilterStateOptions,
+  updateURLProps,
+} from '../../types/types';
 import { Helmet } from 'react-helmet-async';
 import Sort from '../../components/sort/sort';
 import Filter from '../../components/filter/filter';
@@ -18,7 +23,13 @@ import {
   initialState,
   setFilters,
 } from '../../store/filter-slice/filter-slice';
-import { filter, getTitleByValue, sort } from '../../util/util';
+import {
+  filter,
+  getObjectKeys,
+  getTitleByValue,
+  setFilterStateFromParams,
+  sort,
+} from '../../util/util';
 import Pagination from '../../components/pagination/pagination';
 
 function CatalogPage(): JSX.Element {
@@ -33,7 +44,7 @@ function CatalogPage(): JSX.Element {
 
   const MAX_PRODUCTS_CARD_ON_PAGE = 9;
   const countPages = Math.ceil(products.length / MAX_PRODUCTS_CARD_ON_PAGE);
-  const currentPage = +filterState.page;
+  const currentPage = filterState.page ? filterState.page : 1;
 
   const selectedFilterOptions = Object.entries(filterState).reduce(
     (acc: string[], [key, value]) => {
@@ -115,120 +126,94 @@ function CatalogPage(): JSX.Element {
     setSearchParams(searchParams.toString(), { replace: true });
   };
 
-  useEffect(() => {
-    const deleteInvalidParams = (data: { param: string; prop?: string }[]) => {
-      data.forEach(({ param, prop }) => {
-        if (prop) {
-          searchParams.delete(param, prop);
+  function setFilterState<
+    T extends FilterState,
+    K extends keyof T,
+    V extends T[K]
+  >(state: T, options: SetFilterStateOptions<K, V>) {
+    options.forEach(({ key, value }) => {
+      state[key] = value;
+    });
+    dispatch(setFilters(state));
+    return state;
+  }
+
+  const updateURLFromState = useCallback(
+    <T extends FilterState, K extends keyof T>(state: T, keys: K[]) => {
+      keys.forEach((key) => {
+        const value = state[key] as FilterState[keyof FilterState];
+        if (value === null || value === '') {
+          searchParams.delete(String(key));
           return;
         }
-        searchParams.delete(param);
+        if (Array.isArray(value)) {
+          searchParams.delete(String(key));
+          if (value.length) {
+            value.forEach((item) => searchParams.append(String(key), item));
+          }
+          return;
+        }
+        searchParams.set(String(key), String(value));
       });
       setSearchParams(searchParams.toString(), { replace: true });
-    };
+    },
+    [searchParams, setSearchParams]
+  );
 
+  function handleFilterChange<
+    T extends FilterState,
+    K extends keyof T,
+    V extends T[K]
+  >(state: T, options: SetFilterStateOptions<K, V>) {
+    const updatedState = setFilterState(state, options);
+    const keys = options.map((option) => option.key);
+    updateURLFromState(updatedState, keys);
+  }
+
+  useEffect(() => {
     const currentFilter: FilterState = { ...filterState };
-    const deletedProps: { param: string; prop?: string }[] = [];
-    let isNeedToUpdate = false;
-    if (!location.search) {
-      Object.entries(currentFilter).forEach(([key, value]) => {
-        const typedKey = key as keyof typeof currentFilter;
-        if (value !== initialState[typedKey]) {
-          currentFilter[typedKey] = initialState[typedKey] as string & string[];
-        }
-        isNeedToUpdate = true;
-      });
+    if (location.search && !isMounted.current) {
+      const params = searchParams;
+      const invalidParams = setFilterStateFromParams(
+        currentFilter,
+        filterOptions,
+        params
+      );
+      const currentFilterEqualFilterState = getObjectKeys(currentFilter).every(
+        (key) => currentFilter[key] === filterState[key]
+      );
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        invalidParams.push({ param: 'tab', action: 'delete' });
+      }
+      if (!currentFilterEqualFilterState) {
+        dispatch(setFilters(currentFilter));
+      }
+      if (invalidParams.length) {
+        updateURL(invalidParams);
+      }
     }
-
-    if (location.search) {
-      const params = new URLSearchParams(location.search);
-      const filterItems = Object.keys(
-        currentFilter
-      ) as (keyof typeof currentFilter)[];
-
-      filterItems.forEach((key) => {
-        const param = params.get(key);
-        if (param === null) {
-          const value = initialState[key];
-          currentFilter[key] = value as string & string[];
-          isNeedToUpdate = true;
-        }
-
-        let isValidParam = true;
-        if (key !== 'page' && key !== 'tab') {
-          isValidParam = filterOptions[key].some((item) => {
-            if (item.id === 'price' || item.id === 'priceUp') {
-              return true;
-            }
-            return item.value === param;
-          });
-        }
-
-        if (!isValidParam && param !== null) {
-          deletedProps.push({ param: key, prop: param });
-        }
-
-        if (
-          isValidParam &&
-          currentFilter[key] !== param &&
-          key !== 'type' &&
-          key !== 'level' &&
-          key !== 'tab' &&
-          key !== 'page'
-        ) {
-          isNeedToUpdate = true;
-          currentFilter[key] = String(param);
-        }
-        if (key === 'page') {
-          if (param) {
-            currentFilter.page = param;
-            isNeedToUpdate = true;
-          } else {
-            if (currentFilter.page !== '1') {
-              currentFilter.page = '1';
-              isNeedToUpdate = true;
-            }
-          }
-        }
-        if (key === 'tab') {
-          if (param) {
-            if (currentFilter.tab !== param) {
-              currentFilter.tab = param;
-              isNeedToUpdate = true;
-            }
-          } else {
-            if (currentFilter.tab !== 'Characteristics') {
-              currentFilter.tab = 'Characteristics';
-              isNeedToUpdate = true;
-            }
-          }
-        }
-        if (key === 'type' || key === 'level') {
-          const allParams = params.getAll(key);
-          const filterParams = currentFilter[key];
-          const sortedData = [...allParams].sort((a, b) => a.localeCompare(b));
-          const sortedSelected = [...filterParams].sort((a, b) =>
-            a.localeCompare(b)
-          );
-          const isArraysEqual =
-            sortedData.toString() === sortedSelected.toString();
-          if (!isArraysEqual) {
-            currentFilter[key] = allParams;
-            isNeedToUpdate = true;
-          }
-        }
-      });
-    }
-
-    if (isNeedToUpdate) {
-      dispatch(setFilters(currentFilter));
-    }
-    if (deletedProps.length) {
-      deleteInvalidParams(deletedProps);
-    }
-
     isMounted.current = true;
-  }, [dispatch, filterState, location.search, searchParams, setSearchParams]);
+  });
+
+  useEffect(() => {
+    if (!location.search && isMounted.current) {
+      const currentFilter: FilterState = { ...filterState };
+      const keys = getObjectKeys(currentFilter);
+      const filteredKeys = [...keys].filter((key) => {
+        if (
+          Array.isArray(currentFilter[key]) &&
+          Array.isArray(initialState[key])
+        ) {
+          const currentValue = currentFilter[key] as string[];
+          const initialValue = initialState[key] as string[];
+          return currentValue.join() !== initialValue.join();
+        }
+        return currentFilter[key] !== initialState[key] && key !== 'tab';
+      });
+      updateURLFromState(currentFilter, filteredKeys);
+    }
+  }, [filterState, location.search, updateURLFromState]);
 
   const handleBuyButtonClick = (product: Product) => {
     setIsModalOpen(true);
@@ -266,11 +251,14 @@ function CatalogPage(): JSX.Element {
                 <Filter
                   filterState={filterState}
                   filteredProducts={filteredProducts}
-                  onChange={updateURL}
+                  onChange={handleFilterChange}
                 />
               </div>
               <div className="catalog__content">
-                <Sort filterState={filterState} onSortChange={updateURL} />
+                <Sort
+                  filterState={filterState}
+                  onSortChange={handleFilterChange}
+                />
                 <div className="cards catalog__cards">
                   {currentPageProducts.map((product) => (
                     <ProductCard
@@ -283,7 +271,8 @@ function CatalogPage(): JSX.Element {
                 <Pagination
                   currentPage={currentPage}
                   countPages={countPages}
-                  onChange={updateURL}
+                  onChange={handleFilterChange}
+                  filterState={filterState}
                 />
               </div>
             </div>

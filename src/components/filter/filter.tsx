@@ -2,12 +2,15 @@ import { filterOptions } from '../../const/const';
 import FilterPrice from '../filter-price/filter-price';
 import FilterCheckList from '../filter-check-list/filter-check-list';
 import { FilterState } from '../../store/filter-slice/filter-slice';
-import { Products, updateURLProps } from '../../types/types';
+import { Products, SetFilterStateOptions } from '../../types/types';
 
 type FilterProps = {
   filterState: FilterState;
   filteredProducts: Products;
-  onChange: (data: updateURLProps) => void;
+  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
 };
 
 function Filter({
@@ -15,21 +18,22 @@ function Filter({
   filteredProducts,
   onChange,
 }: FilterProps): JSX.Element {
-  const filterPrice = filterState.price ? +filterState.price : null;
-  const filterPriceUp = filterState.priceUp ? +filterState.priceUp : null;
-
   const prices = filteredProducts
     .map((product) => product.price)
     .sort((a, b) => a - b);
 
   const handleResetButtonClick = () => {
-    const resetParams = Object.keys(filterState).map(
-      (filterItem): updateURLProps[number] => ({
-        param: filterItem,
-        action: 'delete',
-      })
-    );
-    onChange(resetParams);
+    const resetParams: {
+      key: keyof FilterState;
+      value: FilterState[keyof FilterState];
+    }[] = [
+      { key: 'price', value: null },
+      { key: 'priceUp', value: null },
+      { key: 'category', value: '' },
+      { key: 'type', value: [] },
+      { key: 'level', value: [] },
+    ];
+    onChange({ ...filterState }, resetParams);
   };
 
   return (
@@ -39,7 +43,7 @@ function Filter({
 
         <FilterPrice
           allPrices={prices}
-          pricesState={{ from: filterPrice, to: filterPriceUp }}
+          filterState={filterState}
           onChange={onChange}
         />
 

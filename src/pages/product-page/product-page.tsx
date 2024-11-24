@@ -1,6 +1,6 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   fetchProduct,
   fetchProductReviews,
@@ -10,7 +10,11 @@ import {
   getProductDetailsStatus,
   getProductReviews,
 } from '../../store/products-slice/selectors';
-import { RequestStatus } from '../../const/const';
+import {
+  filterOptions,
+  // filterOptions,
+  RequestStatus,
+} from '../../const/const';
 import Loader from '../../components/loader/loader';
 import NotFoundPage from '../not-found-page/not-found-page';
 import Tabs from '../../components/tabs/tabs';
@@ -18,10 +22,66 @@ import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import StarsRating from '../../components/stars-rating/stars-rating';
 import ReviewsList from '../../components/reviews-list/reviews-list';
 import { Helmet } from 'react-helmet-async';
+import { getFilterParams } from '../../store/filter-slice/selectors';
+import {
+  FilterState,
+  initialState,
+  setFilters,
+} from '../../store/filter-slice/filter-slice';
+import { SetFilterStateOptions } from '../../types/types';
+import { getObjectKeys, setFilterStateFromParams } from '../../util/util';
+// import { getObjectKeys, setFilterStateFromParams } from '../../util/util';
 
 function ProductPage(): JSX.Element {
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const filterState = useAppSelector(getFilterParams);
+  const isMounted = useRef(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  function setFilterState<
+    T extends FilterState,
+    K extends keyof T,
+    V extends T[K]
+  >(state: T, options: SetFilterStateOptions<K, V>) {
+    options.forEach(({ key, value }) => {
+      state[key] = value;
+    });
+    dispatch(setFilters(state));
+    return state;
+  }
+
+  function updateURLFromState<T extends FilterState, K extends keyof T>(
+    state: T,
+    keys: K[]
+  ) {
+    keys.forEach((key) => {
+      const value = state[key] as FilterState[keyof FilterState];
+      if (value === null || value === '') {
+        searchParams.delete(String(key));
+        return;
+      }
+      if (Array.isArray(value)) {
+        searchParams.delete(String(key));
+        if (value.length) {
+          value.forEach((item) => searchParams.append(String(key), item));
+        }
+        return;
+      }
+      searchParams.set(String(key), String(value));
+    });
+    setSearchParams(searchParams.toString(), { replace: true });
+  }
+
+  function handleFilterChange<
+    T extends FilterState,
+    K extends keyof T,
+    V extends T[K]
+  >(state: T, options: SetFilterStateOptions<K, V>) {
+    const updatedState = setFilterState(state, options);
+    const keys = options.map((option) => option.key);
+    updateURLFromState(updatedState, keys);
+  }
 
   useEffect(() => {
     if (id) {
@@ -29,6 +89,36 @@ function ProductPage(): JSX.Element {
       dispatch(fetchProductReviews({ id }));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    const currentFilter: FilterState = { ...filterState };
+    if (location.search && !isMounted.current) {
+      const params = searchParams;
+      const tabParamValue = params.get('tab');
+      if (tabParamValue) {
+        currentFilter.tab = tabParamValue;
+      }
+      const currentFilterEqualFilterState =
+        currentFilter.tab === filterState.tab;
+      if (!currentFilterEqualFilterState) {
+        dispatch(setFilters(currentFilter));
+      }
+      setFilterStateFromParams(currentFilter, filterOptions, params);
+    }
+    isMounted.current = true;
+  });
+
+  useEffect(() => {
+    if (!location.search && isMounted.current) {
+      const currentFilter: FilterState = { ...filterState };
+      const keys = getObjectKeys(currentFilter).filter(
+        (key) => key === 'tab' && currentFilter[key] !== initialState[key]
+      );
+      if (keys?.length) {
+        updateURLFromState(currentFilter, keys);
+      }
+    }
+  });
 
   const productDetails = useAppSelector(getProductDetails);
   const productDetailsStatus = useAppSelector(getProductDetailsStatus);
@@ -95,7 +185,11 @@ function ProductPage(): JSX.Element {
                     </svg>
                     Добавить в корзину
                   </button>
-                  <Tabs product={productDetails} />
+                  <Tabs
+                    product={productDetails}
+                    onChange={handleFilterChange}
+                    filterState={filterState}
+                  />
                 </div>
               </div>
             </section>

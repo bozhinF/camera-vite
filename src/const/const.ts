@@ -65,4 +65,13 @@ export const filterOptions: FitlerOptions = {
     },
     { id: 'professional', title: 'Профессиональный', value: 'professional' },
   ],
+  page: [{ id: 'Page', title: 'Страница', value: '' }],
+  tab: [
+    {
+      id: 'characteristics',
+      title: 'Характеристики',
+      value: 'characteristics',
+    },
+    { id: 'description', title: 'Описание', value: 'description' },
+  ],
 };

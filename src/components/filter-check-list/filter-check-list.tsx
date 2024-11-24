@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FilterOptionsItem, UpdateUrl } from '../../types/types';
+import { FilterOptionsItem, SetFilterStateOptions } from '../../types/types';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type FilterCheckListProps = {
@@ -7,7 +7,10 @@ type FilterCheckListProps = {
   title: string;
   name: keyof FilterState;
   items: FilterOptionsItem;
-  onChange: UpdateUrl;
+  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
   totalState: FilterState;
 };
 
@@ -58,11 +61,21 @@ function FilterCheckList({
   ) => {
     if (type === 'radio') {
       setCheckedItems(item.value);
-      onChange([
-        { param: name, prop: item.value, action: 'set' },
-        { param: 'type', prop: 'film', action: 'delete' },
-        { param: 'type', prop: 'snapshot', action: 'delete' },
-      ]);
+      if (item.value === 'videocamera') {
+        const changedType = totalState.type.filter(
+          (typeItem) => typeItem !== 'film' && typeItem !== 'snapshot'
+        );
+        const options: {
+          key: keyof FilterState;
+          value: FilterState[keyof FilterState];
+        }[] = [
+          { key: name, value: item.value },
+          { key: 'type', value: changedType },
+        ];
+        onChange({ ...totalState }, options);
+        return;
+      }
+      onChange({ ...totalState }, [{ key: name, value: item.value }]);
       return;
     }
     if (isActive) {
@@ -81,7 +94,14 @@ function FilterCheckList({
           ];
           return result;
         });
-        onChange([{ param: name, prop: item.value, action: 'delete' }]);
+        const change = [...checkedItems].filter(
+          (typeItem) => typeItem !== item.value
+        );
+        const options: {
+          key: keyof FilterState;
+          value: FilterState[keyof FilterState];
+        }[] = [{ key: name, value: change }];
+        onChange({ ...totalState }, options);
         return;
       }
     }
@@ -90,7 +110,9 @@ function FilterCheckList({
         const typedPrev = prev as string[];
         return [...typedPrev, item.value];
       });
-      onChange([{ param: name, prop: item.value, action: 'append' }]);
+      const update = [...checkedItems, item.value];
+
+      onChange({ ...totalState }, [{ key: name, value: update }]);
     }
   };
 

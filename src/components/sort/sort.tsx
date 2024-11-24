@@ -1,15 +1,18 @@
 import { filterOptions } from '../../const/const';
-import { updateURLProps } from '../../types/types';
 import { FilterState } from '../../store/filter-slice/filter-slice';
+import { SetFilterStateOptions } from '../../types/types';
 
 type SortProps = {
   filterState: FilterState;
-  onSortChange: (data: updateURLProps) => void;
+  onSortChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
 };
 
 function Sort({ filterState, onSortChange }: SortProps): JSX.Element {
-  const handleSortChange = (key: string, value: string) =>
-    onSortChange([{ param: key, prop: value, action: 'set' }]);
+  const handleSortChange = (key: 'sort' | 'order', value: string) =>
+    onSortChange({ ...filterState }, [{ key, value }]);
 
   return (
     <div className="catalog-sort">

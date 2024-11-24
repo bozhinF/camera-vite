@@ -50,6 +50,8 @@ export type FitlerOptions = {
   category: FilterOptionsItem;
   type: FilterOptionsItem;
   level: FilterOptionsItem;
+  page: FilterOptionsItem;
+  tab: FilterOptionsItem;
 };
 
 export type updateURLProps = {
@@ -63,3 +65,8 @@ export type UpdateUrl = (data: updateURLProps) => void;
 export type Entries<T> = {
   [K in keyof T]: [K, T[K]];
 }[keyof T][];
+
+export type SetFilterStateOptions<K, V> = {
+  key: K;
+  value: V;
+}[];

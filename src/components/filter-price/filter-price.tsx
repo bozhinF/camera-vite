@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { filterOptions } from '../../const/const';
-import { UpdateUrl } from '../../types/types';
+import { SetFilterStateOptions } from '../../types/types';
+import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type Prices = {
   from: number | null;
@@ -9,15 +10,22 @@ type Prices = {
 
 type FilterPriceProps = {
   allPrices: number[];
-  pricesState: Prices;
-  onChange: UpdateUrl;
+  filterState: FilterState;
+  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
 };
 
 function FilterPrice({
   allPrices,
-  pricesState,
+  filterState,
   onChange,
 }: FilterPriceProps): JSX.Element {
+  const pricesState: Prices = {
+    from: filterState.price,
+    to: filterState.priceUp,
+  };
   const minPrice = allPrices[0];
   const maxPrice = allPrices[allPrices.length - 1];
   const [previousPrices, setPreviousPrices] = useState<Prices>({
@@ -38,10 +46,16 @@ function FilterPrice({
       : null;
     if (
       previousPrices.from !== pricesState.from ||
-      previousPrices.to !== pricesState.to
+      previousPrices.to !== pricesState.to ||
+      pricesState.from !== correctFromValue ||
+      pricesState.to !== correctToValue
     ) {
       setPreviousPrices({ from: correctFromValue, to: correctToValue });
       setCurrentPrices({ from: correctFromValue, to: correctToValue });
+      onChange({ ...filterState }, [
+        { key: 'price', value: correctFromValue },
+        { key: 'priceUp', value: correctToValue },
+      ]);
     }
   }, [
     maxPrice,
@@ -50,6 +64,8 @@ function FilterPrice({
     previousPrices.to,
     pricesState.from,
     pricesState.to,
+    filterState,
+    onChange,
   ]);
 
   const calculatePrice = (
@@ -114,15 +130,15 @@ function FilterPrice({
     setCurrentPrices({ from, to });
 
     if (from && to) {
-      onChange([
-        { param: 'price', prop: String(from), action: 'set' },
-        { param: 'priceUp', prop: String(to), action: 'set' },
+      onChange({ ...filterState }, [
+        { key: 'price', value: from },
+        { key: 'priceUp', value: to },
       ]);
     }
     if (!from && !to) {
-      onChange([
-        { param: 'price', action: 'delete' },
-        { param: 'priceUp', action: 'delete' },
+      onChange({ ...filterState }, [
+        { key: 'price', value: null },
+        { key: 'priceUp', value: null },
       ]);
     }
   };

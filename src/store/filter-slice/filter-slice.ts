@@ -4,12 +4,12 @@ import { filterOptions, NameSpace } from '../../const/const';
 export type FilterState = {
   sort: string;
   order: string;
-  price: string | null;
-  priceUp: string | null;
-  category: string | null;
+  price: number | null;
+  priceUp: number | null;
+  category: string;
   type: string[];
   level: string[];
-  page: string;
+  page: number | null;
   tab: string;
 };
 
@@ -18,11 +18,11 @@ export const initialState: FilterState = {
   order: filterOptions.order[0].value,
   price: null,
   priceUp: null,
-  category: null,
+  category: '',
   type: [],
   level: [],
-  page: '1',
-  tab: 'Characteristics',
+  page: null,
+  tab: filterOptions.tab[0].value,
 };
 
 export const filterSlice = createSlice({

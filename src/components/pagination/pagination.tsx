@@ -1,15 +1,21 @@
-import { UpdateUrl } from '../../types/types';
+import { FilterState } from '../../store/filter-slice/filter-slice';
+import { SetFilterStateOptions } from '../../types/types';
 
 type PaginationProps = {
   currentPage: number;
   countPages: number;
-  onChange: UpdateUrl;
+  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
+    state: T,
+    options: SetFilterStateOptions<K, V>
+  ) => void;
+  filterState: FilterState;
 };
 
 function Pagination({
   currentPage,
   countPages,
   onChange,
+  filterState,
 }: PaginationProps): JSX.Element {
   const maxRenderedPagesCount = 3;
   const startPage =
@@ -34,7 +40,7 @@ function Pagination({
       const link = element as HTMLAnchorElement;
       const pageNumber = link.pathname.slice(1);
       if (pageNumber !== String(currentPage)) {
-        onChange([{ param: 'page', prop: pageNumber, action: 'set' }]);
+        onChange({ ...filterState }, [{ key: 'page', value: +pageNumber }]);
       }
     }
   };
@@ -65,21 +71,6 @@ function Pagination({
             </a>
           </li>
         ))}
-        {/* <li className="pagination__item">
-          <a className="pagination__link pagination__link--active" href="1">
-            1
-          </a>
-        </li>
-        <li className="pagination__item">
-          <a className="pagination__link" href="2">
-            2
-          </a>
-        </li>
-        <li className="pagination__item">
-          <a className="pagination__link" href="3">
-            3
-          </a>
-        </li> */}
         {pages[pages.length - 1] < countPages && (
           <li className="pagination__item">
             <a

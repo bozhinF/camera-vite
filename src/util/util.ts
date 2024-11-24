@@ -1,4 +1,11 @@
-import { Entries, FitlerOptions, Products, Reviews } from '../types/types';
+import {
+  Entries,
+  FilterOptionsItem,
+  FitlerOptions,
+  Products,
+  Reviews,
+  updateURLProps,
+} from '../types/types';
 
 export const capitalize = (string: string): string =>
   string[0].toUpperCase() + string.slice(1);
@@ -92,8 +99,6 @@ export function getObjectKeys<T extends object, K extends keyof T>(obj: T) {
   return Object.keys(obj) as K[];
 }
 
-// export function getEntries<>
-
 export function getTypedObjectKey<
   T extends Record<K, unknown>,
   K extends keyof T
@@ -106,4 +111,103 @@ export function getTypedObjectKey<
 
 export function getObjectEntries<T extends object>(object: T): Entries<T> {
   return Object.entries(object) as Entries<T>;
+}
+
+export function checkIsParamValid<K>(param: string, options: K[]) {
+  return options.some((option) => option === param);
+}
+
+export function checkParamEqualCurrentValue<T>(param: T, value: T) {
+  if (Array.isArray(param) && Array.isArray(value)) {
+    return (
+      param.every((paramItem) =>
+        value.some((valueItem) => valueItem === paramItem)
+      ) &&
+      value.every((valueItem) =>
+        param.some((paramItem) => paramItem === valueItem)
+      )
+    );
+  }
+  return param === value;
+}
+
+export function assignValue<T extends Record<K, unknown>, K extends keyof T>(
+  obj1: T,
+  key: K,
+  value: T[K]
+) {
+  obj1[key] = value;
+}
+
+type PossibleValues<T> = {
+  [K in keyof T]: FilterOptionsItem;
+};
+export function setFilterStateFromParams<
+  T extends Record<K, unknown>,
+  K extends keyof T
+>(
+  currentFilter: T,
+  currentOptions: PossibleValues<T>,
+  searchParams: URLSearchParams
+) {
+  const filterKeys = getObjectKeys(currentFilter);
+  const invalidParams: updateURLProps = [];
+  filterKeys.forEach((key) => {
+    const value = currentFilter[key];
+    const options = currentOptions[key];
+
+    const param = searchParams.get(String(key));
+    if (typeof value === 'number' || value === null) {
+      if (param === null) {
+        assignValue(currentFilter, key, null as T[K]);
+        return;
+      }
+      if (!isNaN(+param)) {
+        assignValue(currentFilter, key, +param as T[K]);
+      }
+    }
+
+    if (
+      typeof value === 'string' &&
+      param !== null &&
+      typeof currentFilter[key] === 'string'
+    ) {
+      const optionsValues = options.map((option) => option.value);
+      const isParamValid = checkIsParamValid(param, optionsValues);
+      const isParamEqualValue = checkParamEqualCurrentValue(param, value);
+      if ((isParamValid || param === '') && !isParamEqualValue) {
+        const result = optionsValues.find(
+          (optionsValue) => optionsValue === param
+        );
+        if (result) {
+          assignValue(currentFilter, key, result as T[keyof T]);
+        }
+      }
+      if (!isParamValid) {
+        invalidParams.push({ param: String(key), action: 'delete' });
+      }
+      return;
+    }
+
+    if (Array.isArray(value) && typeof key === 'string') {
+      const allParams = searchParams.getAll(key);
+      const optionsValues = options.map((option) => option.value);
+      const validParams = allParams.filter((item) => {
+        const isParamValid = checkIsParamValid(item, optionsValues);
+        if (!isParamValid) {
+          invalidParams.push({
+            param: String(key),
+            prop: item,
+            action: 'delete',
+          });
+        }
+        return isParamValid;
+      });
+      const isParamEqualValue = checkParamEqualCurrentValue(validParams, value);
+      if (!isParamEqualValue) {
+        assignValue(currentFilter, key, validParams as T[keyof T]);
+      }
+    }
+  });
+  return invalidParams;
 }
