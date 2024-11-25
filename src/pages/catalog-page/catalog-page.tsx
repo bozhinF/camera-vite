@@ -43,7 +43,6 @@ function CatalogPage(): JSX.Element {
   const location = useLocation();
 
   const MAX_PRODUCTS_CARD_ON_PAGE = 9;
-  const countPages = Math.ceil(products.length / MAX_PRODUCTS_CARD_ON_PAGE);
   const currentPage = filterState.page ? filterState.page : 1;
 
   const selectedFilterOptions = Object.entries(filterState).reduce(
@@ -110,6 +109,8 @@ function CatalogPage(): JSX.Element {
     orderValue as 'up' | 'down'
   );
 
+
+  const countPages = Math.ceil(sortedProducts.length / MAX_PRODUCTS_CARD_ON_PAGE);
   const currentPageProducts = sortedProducts.slice(
     MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1),
     MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1) + MAX_PRODUCTS_CARD_ON_PAGE

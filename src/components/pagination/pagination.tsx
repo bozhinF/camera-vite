@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 import { SetFilterStateOptions } from '../../types/types';
 
@@ -45,6 +46,12 @@ function Pagination({
     }
   };
 
+  useEffect(() => {
+    if (currentPage > countPages && countPages > 0) {
+      onChange({ ...filterState }, [{ key: 'page', value: countPages }]);
+    }
+  });
+
   return (
     <div className="pagination">
       <ul className="pagination__list" onClick={handlePageClick}>
@@ -59,7 +66,7 @@ function Pagination({
           </li>
         )}
 
-        {pages.map((item) => (
+        {pages.length > 1 ? pages.map((item) => (
           <li key={item} className="pagination__item">
             <a
               className={`pagination__link${
@@ -70,7 +77,7 @@ function Pagination({
               {item}
             </a>
           </li>
-        ))}
+        )) : ''}
         {pages[pages.length - 1] < countPages && (
           <li className="pagination__item">
             <a
