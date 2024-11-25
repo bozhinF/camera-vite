@@ -1,31 +1,30 @@
 import { useEffect } from 'react';
 import { FilterState } from '../../store/filter-slice/filter-slice';
-import { SetFilterStateOptions } from '../../types/types';
+import { HandleFilterChange } from '../../types/types';
 
 type PaginationProps = {
   currentPage: number;
   countPages: number;
-  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
-    state: T,
-    options: SetFilterStateOptions<K, V>
-  ) => void;
   filterState: FilterState;
+  onChange: HandleFilterChange;
 };
+
+const MAX_RENDERED_PAGES_COUNT = 3;
 
 function Pagination({
   currentPage,
   countPages,
-  onChange,
   filterState,
+  onChange,
 }: PaginationProps): JSX.Element {
-  const maxRenderedPagesCount = 3;
   const startPage =
-    Math.ceil(currentPage / maxRenderedPagesCount) * maxRenderedPagesCount -
-    maxRenderedPagesCount +
+    Math.ceil(currentPage / MAX_RENDERED_PAGES_COUNT) *
+      MAX_RENDERED_PAGES_COUNT -
+    MAX_RENDERED_PAGES_COUNT +
     1;
   const renderedPagesCount = Math.min(
     countPages - startPage + 1,
-    maxRenderedPagesCount
+    MAX_RENDERED_PAGES_COUNT
   );
   const pages = Array.from(
     { length: renderedPagesCount },
@@ -55,7 +54,7 @@ function Pagination({
   return (
     <div className="pagination">
       <ul className="pagination__list" onClick={handlePageClick}>
-        {startPage > maxRenderedPagesCount && (
+        {startPage > MAX_RENDERED_PAGES_COUNT && (
           <li className="pagination__item">
             <a
               className="pagination__link pagination__link--text"
@@ -66,18 +65,20 @@ function Pagination({
           </li>
         )}
 
-        {pages.length > 1 ? pages.map((item) => (
-          <li key={item} className="pagination__item">
-            <a
-              className={`pagination__link${
-                item === currentPage ? ' pagination__link--active' : ''
-              }`}
-              href={String(item)}
-            >
-              {item}
-            </a>
-          </li>
-        )) : ''}
+        {pages.length > 1
+          ? pages.map((item) => (
+            <li key={item} className="pagination__item">
+              <a
+                className={`pagination__link${
+                  item === currentPage ? ' pagination__link--active' : ''
+                }`}
+                href={String(item)}
+              >
+                {item}
+              </a>
+            </li>
+          ))
+          : ''}
         {pages[pages.length - 1] < countPages && (
           <li className="pagination__item">
             <a

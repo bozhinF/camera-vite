@@ -31,7 +31,7 @@ export enum Endpoint {
   Orders = '/orders',
 }
 
-export const filterOptions: FitlerOptions = {
+export const FilterOption: FitlerOptions = {
   sort: [
     { id: 'sortPrice', title: 'по цене', value: 'price' },
     {
@@ -74,4 +74,4 @@ export const filterOptions: FitlerOptions = {
     },
     { id: 'description', title: 'Описание', value: 'description' },
   ],
-};
+} as const;

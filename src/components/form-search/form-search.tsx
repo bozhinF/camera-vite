@@ -6,6 +6,7 @@ import { Products } from '../../types/types';
 import { useNavigate } from 'react-router-dom';
 
 const NUMBER_OF_CHARACTERS_TO_SERCH = 3;
+
 const filterProducts = (products: Products, searchString: string) =>
   products.filter(({ name }) =>
     name.toLowerCase().includes(searchString.toLowerCase())

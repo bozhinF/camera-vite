@@ -4,11 +4,11 @@ import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type TabsProps = {
   product: Product;
+  filterState: FilterState;
   onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
     state: T,
     options: SetFilterStateOptions<K, V>
   ) => void;
-  filterState: FilterState;
 };
 
 const TabItem = {
@@ -16,7 +16,7 @@ const TabItem = {
   Description: { title: 'Описание', value: 'description' },
 } as const;
 
-function Tabs({ product, onChange, filterState }: TabsProps): JSX.Element {
+function Tabs({ product, filterState, onChange }: TabsProps): JSX.Element {
   const { vendorCode, category, type, level, description } = product;
 
   const activeTab =

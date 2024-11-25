@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { filterOptions } from '../../const/const';
-import { SetFilterStateOptions } from '../../types/types';
+import { FilterOption } from '../../const/const';
+import { HandleFilterChange } from '../../types/types';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type Prices = {
@@ -11,10 +11,7 @@ type Prices = {
 type FilterPriceProps = {
   allPrices: number[];
   filterState: FilterState;
-  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
-    state: T,
-    options: SetFilterStateOptions<K, V>
-  ) => void;
+  onChange: HandleFilterChange;
 };
 
 function FilterPrice({
@@ -178,7 +175,7 @@ function FilterPrice({
               onKeyDown={handleEnterKeyDown}
               onChange={handleInputChange}
               type="number"
-              name={filterOptions.price[0].id}
+              name={FilterOption.price[0].id}
               placeholder={`${minPrice ? minPrice : 'от'}`}
               onBlur={handleInputBlur}
             />
@@ -191,7 +188,7 @@ function FilterPrice({
               onChange={handleInputChange}
               onKeyDown={handleEnterKeyDown}
               type="number"
-              name={filterOptions.priceUp[0].id}
+              name={FilterOption.priceUp[0].id}
               placeholder={`${maxPrice ? maxPrice : 'до'}`}
               onBlur={handleInputBlur}
             />

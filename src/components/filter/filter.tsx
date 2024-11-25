@@ -1,16 +1,13 @@
-import { filterOptions } from '../../const/const';
+import { FilterOption } from '../../const/const';
 import FilterPrice from '../filter-price/filter-price';
 import FilterCheckList from '../filter-check-list/filter-check-list';
 import { FilterState } from '../../store/filter-slice/filter-slice';
-import { Products, SetFilterStateOptions } from '../../types/types';
+import { HandleFilterChange, Products } from '../../types/types';
 
 type FilterProps = {
   filterState: FilterState;
   filteredProducts: Products;
-  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
-    state: T,
-    options: SetFilterStateOptions<K, V>
-  ) => void;
+  onChange: HandleFilterChange;
 };
 
 function Filter({
@@ -51,27 +48,27 @@ function Filter({
           type="radio"
           title="Категория"
           name="category"
-          items={filterOptions.category}
-          onChange={onChange}
+          items={FilterOption.category}
           totalState={filterState}
+          onChange={onChange}
         />
 
         <FilterCheckList
           type="checkbox"
           title="Тип камеры"
           name="type"
-          items={filterOptions.type}
-          onChange={onChange}
+          items={FilterOption.type}
           totalState={filterState}
+          onChange={onChange}
         />
 
         <FilterCheckList
           type="checkbox"
           title="Уровень"
           name="level"
-          items={filterOptions.level}
-          onChange={onChange}
+          items={FilterOption.level}
           totalState={filterState}
+          onChange={onChange}
         />
 
         <button

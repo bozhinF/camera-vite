@@ -1,13 +1,10 @@
-import { filterOptions } from '../../const/const';
+import { FilterOption } from '../../const/const';
 import { FilterState } from '../../store/filter-slice/filter-slice';
-import { SetFilterStateOptions } from '../../types/types';
+import { HandleFilterChange } from '../../types/types';
 
 type SortProps = {
   filterState: FilterState;
-  onSortChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
-    state: T,
-    options: SetFilterStateOptions<K, V>
-  ) => void;
+  onSortChange: HandleFilterChange;
 };
 
 function Sort({ filterState, onSortChange }: SortProps): JSX.Element {
@@ -20,7 +17,7 @@ function Sort({ filterState, onSortChange }: SortProps): JSX.Element {
         <div className="catalog-sort__inner">
           <p className="title title--h5">Сортировать:</p>
           <div className="catalog-sort__type">
-            {Object.values(filterOptions.sort).map(({ id, title, value }) => (
+            {Object.values(FilterOption.sort).map(({ id, title, value }) => (
               <div key={id} className="catalog-sort__btn-text">
                 <input
                   type="radio"
@@ -34,7 +31,7 @@ function Sort({ filterState, onSortChange }: SortProps): JSX.Element {
             ))}
           </div>
           <div className="catalog-sort__order">
-            {Object.values(filterOptions.order).map(({ id, title, value }) => (
+            {Object.values(FilterOption.order).map(({ id, title, value }) => (
               <div
                 key={id}
                 className={`catalog-sort__btn catalog-sort__btn--${id}`}

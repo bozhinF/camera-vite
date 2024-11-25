@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FilterOptionsItem, SetFilterStateOptions } from '../../types/types';
+import { FilterOptionsItem, HandleFilterChange } from '../../types/types';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 
 type FilterCheckListProps = {
@@ -7,11 +7,8 @@ type FilterCheckListProps = {
   title: string;
   name: keyof FilterState;
   items: FilterOptionsItem;
-  onChange: <T extends FilterState, K extends keyof T, V extends T[K]>(
-    state: T,
-    options: SetFilterStateOptions<K, V>
-  ) => void;
   totalState: FilterState;
+  onChange: HandleFilterChange;
 };
 
 function FilterCheckList({
@@ -19,8 +16,8 @@ function FilterCheckList({
   title,
   name,
   items,
-  onChange,
   totalState,
+  onChange,
 }: FilterCheckListProps): JSX.Element {
   const localState = totalState[name];
   const [checkedItems, setCheckedItems] =
@@ -43,9 +40,11 @@ function FilterCheckList({
     }
 
     if (Array.isArray(localState) && Array.isArray(checkedItems)) {
-      const sortedState = [...localState].sort((a, b) => a.localeCompare(b));
-      const sortedCheckedItems = [...checkedItems].sort((a, b) =>
-        a.localeCompare(b)
+      const sortedState = [...localState].sort((firstItem, secondItem) =>
+        firstItem.localeCompare(secondItem)
+      );
+      const sortedCheckedItems = [...checkedItems].sort(
+        (firstItem, secondItem) => firstItem.localeCompare(secondItem)
       );
       const isArraysEqual =
         sortedState.toString() === sortedCheckedItems.toString();
@@ -94,13 +93,13 @@ function FilterCheckList({
           ];
           return result;
         });
-        const change = [...checkedItems].filter(
+        const update = [...checkedItems].filter(
           (typeItem) => typeItem !== item.value
         );
         const options: {
           key: keyof FilterState;
           value: FilterState[keyof FilterState];
-        }[] = [{ key: name, value: change }];
+        }[] = [{ key: name, value: update }];
         onChange({ ...totalState }, options);
         return;
       }

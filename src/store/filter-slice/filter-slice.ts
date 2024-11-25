@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { filterOptions, NameSpace } from '../../const/const';
+import { FilterOption, NameSpace } from '../../const/const';
 
 export type FilterState = {
   sort: string;
@@ -14,15 +14,15 @@ export type FilterState = {
 };
 
 export const initialState: FilterState = {
-  sort: filterOptions.sort[0].value,
-  order: filterOptions.order[0].value,
+  sort: FilterOption.sort[0].value,
+  order: FilterOption.order[0].value,
   price: null,
   priceUp: null,
   category: '',
   type: [],
   level: [],
   page: null,
-  tab: filterOptions.tab[0].value,
+  tab: FilterOption.tab[0].value,
 };
 
 export const filterSlice = createSlice({

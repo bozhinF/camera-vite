@@ -7,6 +7,7 @@ import { getAllProducts } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
 import CallItemModal from '../../components/call-item-modal/call-item-modal';
 import {
+  HandleFilterChange,
   Product,
   Products,
   SetFilterStateOptions,
@@ -17,7 +18,7 @@ import Sort from '../../components/sort/sort';
 import Filter from '../../components/filter/filter';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { getFilterParams } from '../../store/filter-slice/selectors';
-import { filterOptions } from '../../const/const';
+import { FilterOption } from '../../const/const';
 import {
   FilterState,
   initialState,
@@ -26,91 +27,88 @@ import {
 import {
   filter,
   getObjectKeys,
+  getSelectedFilterOptions,
   getTitleByValue,
   setFilterStateFromParams,
   sort,
 } from '../../util/util';
 import Pagination from '../../components/pagination/pagination';
 
+const MAX_PRODUCTS_CARD_ON_PAGE = 9;
+
 function CatalogPage(): JSX.Element {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [callItem, setCallItem] = useState<Product | null>(null);
-  const products = useAppSelector(getAllProducts);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const filterState = useAppSelector(getFilterParams);
   const dispatch = useAppDispatch();
-  const isMounted = useRef(false);
+
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const MAX_PRODUCTS_CARD_ON_PAGE = 9;
+  const products = useAppSelector(getAllProducts);
+  const filterState = useAppSelector(getFilterParams);
+
+  const isMounted = useRef(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [callItem, setCallItem] = useState<Product | null>(null);
+
   const currentPage = filterState.page ? filterState.page : 1;
+  const sortValue = filterState.sort;
+  const orderValue = filterState.order;
 
-  const selectedFilterOptions = Object.entries(filterState).reduce(
-    (acc: string[], [key, value]) => {
-      if (value === null) {
-        return acc;
-      }
-      if (Array.isArray(value) && !value.length) {
-        return acc;
-      }
-      if (!(key in filter)) {
-        return acc;
-      }
-      return [...acc, key];
-    },
-    []
-  );
+  const selectedFilterOptions = getSelectedFilterOptions(filterState);
 
   const filteredProducts = selectedFilterOptions.reduce(
-    (acc: Products, option) => {
-      if (option === 'price' && filterState.price && filterState.priceUp) {
-        return filter.price(acc, {
-          from: +filterState.price,
-          to: +filterState.priceUp,
-        });
-      }
+    (selectedProducts: Products, option) => {
       if (option === 'category' && filterState.category) {
         const category = getTitleByValue(
-          filterOptions,
+          FilterOption,
           option,
           filterState.category
         );
         if (category !== null && !Array.isArray(category)) {
-          return filter.category(acc, category);
+          return filter.category(selectedProducts, category);
         }
-        return acc;
+        return selectedProducts;
       }
       if (option === 'type') {
-        const types = getTitleByValue(filterOptions, option, filterState.type);
+        const types = getTitleByValue(FilterOption, option, filterState.type);
         if (types !== null && Array.isArray(types) && types.length) {
-          return filter.type(acc, types);
+          return filter.type(selectedProducts, types);
         }
-        return acc;
+        return selectedProducts;
       }
       if (option === 'level') {
-        const levels = getTitleByValue(
-          filterOptions,
-          option,
-          filterState.level
-        );
+        const levels = getTitleByValue(FilterOption, option, filterState.level);
         if (levels !== null && Array.isArray(levels) && levels.length) {
-          return filter.level(acc, levels);
+          return filter.level(selectedProducts, levels);
         }
-        return acc;
+        return selectedProducts;
       }
-      return acc;
+      return selectedProducts;
     },
     products
   );
-  const sortValue = filterState.sort;
-  const orderValue = filterState.order;
+
+  const filteredByPriceProducts = selectedFilterOptions.reduce(
+    (selectedProducts: Products, option) => {
+      if (option === 'price' && filterState.price && filterState.priceUp) {
+        return filter.price(selectedProducts, {
+          from: +filterState.price,
+          to: +filterState.priceUp,
+        });
+      }
+      return selectedProducts;
+    },
+    filteredProducts
+  );
+
   const sortedProducts = sort[sortValue as 'price' | 'popular'](
-    filteredProducts,
+    filteredByPriceProducts,
     orderValue as 'up' | 'down'
   );
 
+  const countPages = Math.ceil(
+    sortedProducts.length / MAX_PRODUCTS_CARD_ON_PAGE
+  );
 
-  const countPages = Math.ceil(sortedProducts.length / MAX_PRODUCTS_CARD_ON_PAGE);
   const currentPageProducts = sortedProducts.slice(
     MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1),
     MAX_PRODUCTS_CARD_ON_PAGE * (currentPage - 1) + MAX_PRODUCTS_CARD_ON_PAGE
@@ -161,23 +159,13 @@ function CatalogPage(): JSX.Element {
     [searchParams, setSearchParams]
   );
 
-  function handleFilterChange<
-    T extends FilterState,
-    K extends keyof T,
-    V extends T[K]
-  >(state: T, options: SetFilterStateOptions<K, V>) {
-    const updatedState = setFilterState(state, options);
-    const keys = options.map((option) => option.key);
-    updateURLFromState(updatedState, keys);
-  }
-
   useEffect(() => {
     const currentFilter: FilterState = { ...filterState };
     if (location.search && !isMounted.current) {
       const params = searchParams;
       const invalidParams = setFilterStateFromParams(
         currentFilter,
-        filterOptions,
+        FilterOption,
         params
       );
       const currentFilterEqualFilterState = getObjectKeys(currentFilter).every(
@@ -216,13 +204,19 @@ function CatalogPage(): JSX.Element {
     }
   }, [filterState, location.search, updateURLFromState]);
 
+  const handleFilterChange: HandleFilterChange = (state, options) => {
+    const updatedState = setFilterState(state, options);
+    const keys = options.map((option) => option.key);
+    updateURLFromState(updatedState, keys);
+  };
+
   const handleBuyButtonClick = (product: Product) => {
-    setIsModalOpen(true);
+    setModalOpen(true);
     setCallItem(product);
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
+    setModalOpen(false);
     setCallItem(null);
   };
 
@@ -271,8 +265,8 @@ function CatalogPage(): JSX.Element {
                 <Pagination
                   currentPage={currentPage}
                   countPages={countPages}
-                  onChange={handleFilterChange}
                   filterState={filterState}
+                  onChange={handleFilterChange}
                 />
               </div>
             </div>

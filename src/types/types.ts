@@ -1,3 +1,5 @@
+import { FilterState } from '../store/filter-slice/filter-slice';
+
 export type Product = {
   id: number;
   name: string;
@@ -70,3 +72,16 @@ export type SetFilterStateOptions<K, V> = {
   key: K;
   value: V;
 }[];
+
+export type HandleFilterChange = <
+  T extends FilterState,
+  K extends keyof T,
+  V extends T[K]
+>(
+  state: T,
+  options: SetFilterStateOptions<K, V>
+) => void;
+
+export type PossibleFilterItemValues<T> = {
+  [K in keyof T]: FilterOptionsItem;
+};

@@ -1,7 +1,8 @@
+import { FilterState } from '../store/filter-slice/filter-slice';
 import {
   Entries,
-  FilterOptionsItem,
   FitlerOptions,
+  PossibleFilterItemValues,
   Products,
   Reviews,
   updateURLProps,
@@ -69,55 +70,16 @@ export const sort = {
   },
 };
 
-export function getObjectValue<T extends object, K extends keyof T>(
-  obj: T,
-  key: string | null
-): T[K] {
-  if (key !== null && key in obj) {
-    const typedKey = key as K;
-    return obj[typedKey];
-  }
-  return Object.values(obj)[0] as T[K];
-}
-export function getObjectValues<T extends object, K extends keyof T>(
-  obj: T
-): T[K][] {
-  const keys = Object.keys(obj) as K[];
-  return keys.map((key) => obj[key]);
-}
-export function getObjectKey<T extends object, K extends keyof T>(
-  obj: T,
-  key: string
-) {
-  if (key in obj) {
-    return key as K;
-  }
-  return Object.keys(obj)[0] as K;
-}
+export const getObjectKeys = <T extends object, K extends keyof T>(obj: T) =>
+  Object.keys(obj) as K[];
 
-export function getObjectKeys<T extends object, K extends keyof T>(obj: T) {
-  return Object.keys(obj) as K[];
-}
+export const getObjectEntries = <T extends object>(object: T): Entries<T> =>
+  Object.entries(object) as Entries<T>;
 
-export function getTypedObjectKey<
-  T extends Record<K, unknown>,
-  K extends keyof T
->(obj: T, key: K): K | undefined {
-  if (key in obj) {
-    return key; // здесь ключ уже имеет литеральный тип
-  }
-  return undefined;
-}
+export const checkIsParamValid = <K>(param: string, options: K[]) =>
+  options.some((option) => option === param);
 
-export function getObjectEntries<T extends object>(object: T): Entries<T> {
-  return Object.entries(object) as Entries<T>;
-}
-
-export function checkIsParamValid<K>(param: string, options: K[]) {
-  return options.some((option) => option === param);
-}
-
-export function checkParamEqualCurrentValue<T>(param: T, value: T) {
+export const checkParamEqualCurrentValue = <T>(param: T, value: T) => {
   if (Array.isArray(param) && Array.isArray(value)) {
     return (
       param.every((paramItem) =>
@@ -129,27 +91,24 @@ export function checkParamEqualCurrentValue<T>(param: T, value: T) {
     );
   }
   return param === value;
-}
+};
 
-export function assignValue<T extends Record<K, unknown>, K extends keyof T>(
+export const assignValue = <T extends Record<K, unknown>, K extends keyof T>(
   obj1: T,
   key: K,
   value: T[K]
-) {
+) => {
   obj1[key] = value;
-}
-
-type PossibleValues<T> = {
-  [K in keyof T]: FilterOptionsItem;
 };
-export function setFilterStateFromParams<
+
+export const setFilterStateFromParams = <
   T extends Record<K, unknown>,
   K extends keyof T
 >(
-  currentFilter: T,
-  currentOptions: PossibleValues<T>,
-  searchParams: URLSearchParams
-) {
+    currentFilter: T,
+    currentOptions: PossibleFilterItemValues<T>,
+    searchParams: URLSearchParams
+  ) => {
   const filterKeys = getObjectKeys(currentFilter);
   const invalidParams: updateURLProps = [];
   filterKeys.forEach((key) => {
@@ -210,4 +169,18 @@ export function setFilterStateFromParams<
     }
   });
   return invalidParams;
-}
+};
+
+export const getSelectedFilterOptions = (filterState: FilterState): string[] =>
+  Object.entries(filterState).reduce((options: string[], [key, value]) => {
+    if (value === null) {
+      return options;
+    }
+    if (Array.isArray(value) && !value.length) {
+      return options;
+    }
+    if (!(key in filter)) {
+      return options;
+    }
+    return [...options, key];
+  }, []);
