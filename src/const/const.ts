@@ -2,8 +2,8 @@ import { FitlerOptions } from '../types/types';
 
 export enum AppRoute {
   Main = '/',
-  Basket = '/basket',
   Catalog = '/catalog',
+  Basket = '/catalog/basket',
   Product = '/catalog/product/:id',
 }
 

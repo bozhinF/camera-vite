@@ -1,34 +1,10 @@
+import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+
 function BasketPage(): JSX.Element {
   return (
     <main>
       <div className="page-content">
-        <div className="breadcrumbs">
-          <div className="container">
-            <ul className="breadcrumbs__list">
-              <li className="breadcrumbs__item">
-                <a className="breadcrumbs__link" href="index.html">
-                  Главная
-                  <svg width={5} height={8} aria-hidden="true">
-                    <use xlinkHref="#icon-arrow-mini" />
-                  </svg>
-                </a>
-              </li>
-              <li className="breadcrumbs__item">
-                <a className="breadcrumbs__link" href="catalog.html">
-                  Каталог
-                  <svg width={5} height={8} aria-hidden="true">
-                    <use xlinkHref="#icon-arrow-mini" />
-                  </svg>
-                </a>
-              </li>
-              <li className="breadcrumbs__item">
-                <span className="breadcrumbs__link breadcrumbs__link--active">
-                  Корзина
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <Breadcrumbs />
         <section className="basket">
           <div className="container">
             <h1 className="title title--h2">Корзина</h1>
@@ -38,11 +14,11 @@ function BasketPage(): JSX.Element {
                   <picture>
                     <source
                       type="image/webp"
-                      srcSet="img/content/orlenok.webp, img/content/orlenok@2x.webp 2x"
+                      srcSet="/img/content/orlenok.webp, /img/content/orlenok@2x.webp 2x"
                     />
                     <img
-                      src="img/content/orlenok.jpg"
-                      srcSet="img/content/orlenok@2x.jpg 2x"
+                      src="/img/content/orlenok.jpg"
+                      srcSet="/img/content/orlenok@2x.jpg 2x"
                       width={140}
                       height={120}
                       alt="Фотоаппарат «Орлёнок»"
@@ -112,11 +88,11 @@ function BasketPage(): JSX.Element {
                   <picture>
                     <source
                       type="image/webp"
-                      srcSet="img/content/das-auge.webp, img/content/das-auge@2x.webp 2x"
+                      srcSet="/img/content/das-auge.webp, /img/content/das-auge@2x.webp 2x"
                     />
                     <img
-                      src="img/content/das-auge.jpg"
-                      srcSet="img/content/das-auge@2x.jpg 2x"
+                      src="/img/content/das-auge.jpg"
+                      srcSet="/img/content/das-auge@2x.jpg 2x"
                       width={140}
                       height={120}
                       alt="Ретрокамера «Das Auge IV»"

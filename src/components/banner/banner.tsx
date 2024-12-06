@@ -4,11 +4,11 @@ function Banner(): JSX.Element {
       <picture>
         <source
           type="image/webp"
-          srcSet="img/content/banner-bg.webp, img/content/banner-bg@2x.webp 2x"
+          srcSet="/img/content/banner-bg.webp, /img/content/banner-bg@2x.webp 2x"
         />
         <img
-          src="img/content/banner-bg.jpg"
-          srcSet="img/content/banner-bg@2x.jpg 2x"
+          src="/img/content/banner-bg.jpg"
+          srcSet="/img/content/banner-bg@2x.jpg 2x"
           width={1280}
           height={280}
           alt="баннер"
