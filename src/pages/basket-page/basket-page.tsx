@@ -1,6 +1,11 @@
+import BasketItem from '../../components/basket-item/basket-item';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import { useAppSelector } from '../../hooks';
+import { getAllProducts } from '../../store/products-slice/selectors';
 
 function BasketPage(): JSX.Element {
+  const products = useAppSelector(getAllProducts);
+  const productsInBasket = products.slice(0, 2);
   return (
     <main>
       <div className="page-content">
@@ -9,7 +14,10 @@ function BasketPage(): JSX.Element {
           <div className="container">
             <h1 className="title title--h2">Корзина</h1>
             <ul className="basket__list">
-              <li className="basket-item">
+              {productsInBasket.map((product) => (
+                <BasketItem key={product.id} product={product} />
+              ))}
+              {/* <li className="basket-item">
                 <div className="basket-item__img">
                   <picture>
                     <source
@@ -159,7 +167,7 @@ function BasketPage(): JSX.Element {
                     <use xlinkHref="#icon-close" />
                   </svg>
                 </button>
-              </li>
+              </li> */}
             </ul>
             <div className="basket__summary">
               <div className="basket__promo">
