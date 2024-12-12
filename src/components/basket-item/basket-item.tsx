@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Product } from '../../types/types';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getBasket } from '../../store/products-slice/selectors';
+import { updateBasket } from '../../store/products-slice/products-slice';
 
 type BasketItemProps = {
   product: Product;
+  amount: number;
 };
 
 enum Quantity {
@@ -10,8 +14,9 @@ enum Quantity {
   Max = 9,
 }
 
-function BasketItem({ product }: BasketItemProps): JSX.Element {
+function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
   const {
+    id,
     name,
     vendorCode,
     type,
@@ -24,7 +29,10 @@ function BasketItem({ product }: BasketItemProps): JSX.Element {
     previewImgWebp2x,
   } = product;
 
-  const [quantity, setQuantity] = useState<number>(Quantity.Min);
+  const dispatch = useAppDispatch();
+  const basket = useAppSelector(getBasket);
+
+  const [quantity, setQuantity] = useState<number>(amount);
 
   const handlePrevButtonClick = () =>
     setQuantity((prev) => (prev <= Quantity.Min ? prev : prev - 1));
@@ -132,7 +140,15 @@ function BasketItem({ product }: BasketItemProps): JSX.Element {
         <span className="visually-hidden">Общая цена:</span>
         {(quantity * price).toLocaleString()} ₽
       </div>
-      <button className="cross-btn" type="button" aria-label="Удалить товар">
+      <button
+        className="cross-btn"
+        type="button"
+        aria-label="Удалить товар"
+        onClick={() => {
+          const update = [...basket].filter((productId) => productId !== id);
+          dispatch(updateBasket(update));
+        }}
+      >
         <svg width={10} height={10} aria-hidden="true">
           <use xlinkHref="#icon-close" />
         </svg>

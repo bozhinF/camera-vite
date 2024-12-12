@@ -6,6 +6,7 @@ import {
   fetchProductReviews,
 } from '../../store/products-slice/thunks';
 import {
+  getBasket,
   getProductDetails,
   getProductDetailsStatus,
   getProductReviews,
@@ -26,6 +27,7 @@ import {
 } from '../../store/filter-slice/filter-slice';
 import { HandleFilterChange, SetFilterStateOptions } from '../../types/types';
 import { getObjectKeys, setFilterStateFromParams } from '../../util/util';
+import { updateBasket } from '../../store/products-slice/products-slice';
 
 function ProductPage(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -37,6 +39,10 @@ function ProductPage(): JSX.Element {
   const productDetails = useAppSelector(getProductDetails);
   const productDetailsStatus = useAppSelector(getProductDetailsStatus);
   const productReviews = useAppSelector(getProductReviews);
+  const basket = useAppSelector(getBasket);
+  const countProuductInBasket = basket.filter(
+    (item) => item === productDetails?.id
+  ).length;
 
   const isMounted = useRef(false);
 
@@ -188,7 +194,15 @@ function ProductPage(): JSX.Element {
                     <span className="visually-hidden">Цена:</span>
                     {price.toLocaleString('ru')} ₽
                   </p>
-                  <button className="btn btn--purple" type="button">
+                  <button
+                    className="btn btn--purple btn--purple-border"
+                    type="button"
+                    onClick={() => {
+                      if (countProuductInBasket < 9) {
+                        dispatch(updateBasket([...basket, productDetails.id]));
+                      }
+                    }}
+                  >
                     <svg width={24} height={16} aria-hidden="true">
                       <use xlinkHref="#icon-add-basket" />
                     </svg>

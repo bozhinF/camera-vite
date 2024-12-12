@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NameSpace, RequestStatus } from '../../const/const';
 import { Product, Products, Reviews } from '../../types/types';
 import {
@@ -7,6 +7,7 @@ import {
   fetchProductReviews,
   postOrder,
 } from './thunks';
+import { saveLocalBasket } from '../../services/basket';
 
 type ProductsState = {
   allProductsStatus: RequestStatus;
@@ -15,6 +16,7 @@ type ProductsState = {
   productDetails: Product | null;
   productReviewsStatus: RequestStatus;
   productReviews: Reviews;
+  basket: number[];
   postOrderStatus: RequestStatus;
 };
 
@@ -25,13 +27,22 @@ const initialState: ProductsState = {
   productDetails: null,
   productReviewsStatus: RequestStatus.Idle,
   productReviews: [],
+  basket: [],
   postOrderStatus: RequestStatus.Idle,
 };
 
 export const productsSlice = createSlice({
   name: NameSpace.Products,
   initialState,
-  reducers: {},
+  reducers: {
+    updateBasket(state, action: PayloadAction<number[]>) {
+      state.basket = action.payload;
+      saveLocalBasket(action.payload);
+    },
+    setBasket(state, action: PayloadAction<number[]>) {
+      state.basket = action.payload;
+    },
+  },
   extraReducers: (builder) =>
     builder
       .addCase(fetchAllProducts.pending, (state) => {
@@ -74,3 +85,5 @@ export const productsSlice = createSlice({
         state.postOrderStatus = RequestStatus.Failed;
       }),
 });
+
+export const { setBasket, updateBasket } = productsSlice.actions;

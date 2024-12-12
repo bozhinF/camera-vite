@@ -25,3 +25,6 @@ export const getProductReviews = (
 export const getPostOrderStatus = (
   state: Pick<State, NameSpace.Products>
 ): RequestStatus => state[NameSpace.Products].postOrderStatus;
+
+export const getBasket = (state: Pick<State, NameSpace.Products>): number[] =>
+  state[NameSpace.Products].basket;
