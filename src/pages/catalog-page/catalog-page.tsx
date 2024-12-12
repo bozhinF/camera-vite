@@ -47,7 +47,7 @@ function CatalogPage(): JSX.Element {
 
   const isMounted = useRef(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [callItem, setCallItem] = useState<Product | null>(null);
+  const [addItem, setAddItem] = useState<Product | null>(null);
 
   const currentPage = filterState.page ? filterState.page : 1;
   const sortValue = filterState.sort;
@@ -212,12 +212,12 @@ function CatalogPage(): JSX.Element {
 
   const handleBuyButtonClick = (product: Product) => {
     setModalOpen(true);
-    setCallItem(product);
+    setAddItem(product);
   };
 
   const handleModalClose = () => {
     setModalOpen(false);
-    setCallItem(null);
+    setAddItem(null);
   };
 
   return (
@@ -228,7 +228,7 @@ function CatalogPage(): JSX.Element {
       {isModalOpen && (
         <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
           <AddItemModal
-            callItem={callItem}
+            addItem={addItem}
             onCloseButtonClick={handleModalClose}
           />
         </Portal>

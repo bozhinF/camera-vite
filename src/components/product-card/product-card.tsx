@@ -2,44 +2,31 @@ import { Link } from 'react-router-dom';
 import { Product } from '../../types/types';
 import StarsRating from '../stars-rating/stars-rating';
 import { AppRoute } from '../../const/const';
+import ProductImage from '../product-image/product-image';
 
 type ProductCardProps = {
   product: Product;
   onBuyButtonClick: (product: Product) => void;
 };
 
+enum ImageSize {
+  Width = 280,
+  Height = 240,
+}
+
 function ProductCard({
   product,
   onBuyButtonClick,
 }: ProductCardProps): JSX.Element {
-  const {
-    id,
-    name,
-    price,
-    rating,
-    reviewCount,
-    previewImg,
-    previewImg2x,
-    previewImgWebp,
-    previewImgWebp2x,
-  } = product;
+  const { id, name, price, rating, reviewCount } = product;
 
   return (
     <div className="product-card">
       <div className="product-card__img">
-        <picture>
-          <source
-            type="image/webp"
-            srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
-          />
-          <img
-            src={`/${previewImg}`}
-            srcSet={`/${previewImg2x} 2x`}
-            width={280}
-            height={240}
-            alt={name}
-          />
-        </picture>
+        <ProductImage
+          image={product}
+          size={{ width: ImageSize.Width, height: ImageSize.Height }}
+        />
       </div>
       <div className="product-card__info">
         <StarsRating rating={rating} reviewCount={reviewCount} />

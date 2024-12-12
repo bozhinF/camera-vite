@@ -6,6 +6,7 @@ import PhoneInput from '../phone-input/phone-input';
 import { useAppDispatch } from '../../hooks';
 import { postOrder } from '../../store/products-slice/thunks';
 import { useElementListener } from '../../hooks/use-element-listener';
+import ProductImage from '../product-image/product-image';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -132,37 +133,14 @@ function CallItemModal({
     return <SomethingWrongModal onCloseButtonClick={onCloseButtonClick} />;
   }
 
-  const {
-    name,
-    vendorCode,
-    type,
-    category,
-    level,
-    price,
-    previewImg,
-    previewImg2x,
-    previewImgWebp,
-    previewImgWebp2x,
-  } = callItem;
+  const { name, vendorCode, type, category, level, price } = callItem;
 
   return (
     <div className="modal__content">
       <p className="title title--h4">Свяжитесь со мной</p>
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
-          <picture>
-            <source
-              type="image/webp"
-              srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
-            />
-            <img
-              src={`/${previewImg}`}
-              srcSet={`/${previewImg2x} 2x`}
-              width={140}
-              height={120}
-              alt={callItem.name}
-            />
-          </picture>
+          <ProductImage image={callItem} />
         </div>
         <div className="basket-item__description">
           <p className="basket-item__title">{name}</p>

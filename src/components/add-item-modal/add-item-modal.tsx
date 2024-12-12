@@ -5,14 +5,15 @@ import SomethingWrongModal from '../something-wrong-modal/something-wrong-modal'
 import { addItemToBasket } from '../../store/products-slice/products-slice';
 import { useElementListener } from '../../hooks/use-element-listener';
 import { useWindowListener } from '../../hooks/use-window-listener';
+import ProductImage from '../product-image/product-image';
 
 type AddItemModalProps = {
-  callItem: Product | null;
+  addItem: Product | null;
   onCloseButtonClick: () => void;
 };
 
 function AddItemModal({
-  callItem,
+  addItem,
   onCloseButtonClick,
 }: AddItemModalProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -65,11 +66,11 @@ function AddItemModal({
   };
 
   const handleBuyButtonClick = () => {
-    if (!callItem) {
+    if (!addItem) {
       return;
     }
     setIsBuyButtonDisabled(true);
-    const { id } = callItem;
+    const { id } = addItem;
     dispatch(addItemToBasket(id));
     onCloseButtonClick();
     setIsBuyButtonDisabled(false);
@@ -90,41 +91,18 @@ function AddItemModal({
     handleLastFocusableElementTabDown
   );
 
-  if (callItem === null) {
+  if (addItem === null) {
     return <SomethingWrongModal onCloseButtonClick={onCloseButtonClick} />;
   }
 
-  const {
-    name,
-    vendorCode,
-    type,
-    category,
-    level,
-    price,
-    previewImg,
-    previewImg2x,
-    previewImgWebp,
-    previewImgWebp2x,
-  } = callItem;
+  const { name, vendorCode, type, category, level, price } = addItem;
 
   return (
     <div className="modal__content">
       <p className="title title--h4">Добавить товар в корзину</p>
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
-          <picture>
-            <source
-              type="image/webp"
-              srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
-            />
-            <img
-              src={`/${previewImg}`}
-              srcSet={`/${previewImg2x} 2x`}
-              width={140}
-              height={120}
-              alt={callItem.name}
-            />
-          </picture>
+          <ProductImage image={addItem} />
         </div>
         <div className="basket-item__description">
           <p className="basket-item__title">{name}</p>

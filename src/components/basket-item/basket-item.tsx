@@ -3,6 +3,7 @@ import { Product } from '../../types/types';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getBasket } from '../../store/products-slice/selectors';
 import { updateBasket } from '../../store/products-slice/products-slice';
+import ProductImage from '../product-image/product-image';
 
 type BasketItemProps = {
   product: Product;
@@ -15,19 +16,7 @@ enum Quantity {
 }
 
 function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
-  const {
-    id,
-    name,
-    vendorCode,
-    type,
-    category,
-    level,
-    price,
-    previewImg,
-    previewImg2x,
-    previewImgWebp,
-    previewImgWebp2x,
-  } = product;
+  const { id, name, vendorCode, type, category, level, price } = product;
 
   const dispatch = useAppDispatch();
   const basket = useAppSelector(getBasket);
@@ -72,7 +61,8 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
   return (
     <li className="basket-item">
       <div className="basket-item__img">
-        <picture>
+        <ProductImage image={product} />
+        {/* <picture>
           <source
             type="image/webp"
             srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
@@ -84,7 +74,7 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
             height={120}
             alt={name}
           />
-        </picture>
+        </picture> */}
       </div>
       <div className="basket-item__description">
         <p className="basket-item__title">{name}</p>

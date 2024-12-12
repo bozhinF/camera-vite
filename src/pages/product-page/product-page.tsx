@@ -28,6 +28,12 @@ import {
 import { HandleFilterChange, SetFilterStateOptions } from '../../types/types';
 import { getObjectKeys, setFilterStateFromParams } from '../../util/util';
 import { updateBasket } from '../../store/products-slice/products-slice';
+import ProductImage from '../../components/product-image/product-image';
+
+enum ImageSize {
+  Width = 140,
+  Height = 120,
+}
 
 function ProductPage(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -145,16 +151,7 @@ function ProductPage(): JSX.Element {
     return <NotFoundPage />;
   }
 
-  const {
-    name,
-    price,
-    rating,
-    reviewCount,
-    previewImg,
-    previewImg2x,
-    previewImgWebp,
-    previewImgWebp2x,
-  } = productDetails;
+  const { name, price, rating, reviewCount } = productDetails;
 
   window.scrollTo({
     top: 0,
@@ -173,19 +170,10 @@ function ProductPage(): JSX.Element {
             <section className="product">
               <div className="container">
                 <div className="product__img">
-                  <picture>
-                    <source
-                      type="image/webp"
-                      srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
-                    />
-                    <img
-                      src={`/${previewImg}`}
-                      srcSet={`/${previewImg2x} 2x`}
-                      width={560}
-                      height={480}
-                      alt={name}
-                    />
-                  </picture>
+                  <ProductImage
+                    image={productDetails}
+                    size={{ width: ImageSize.Width, height: ImageSize.Height }}
+                  />
                 </div>
                 <div className="product__content">
                   <h1 className="title title--h3">{name}</h1>
