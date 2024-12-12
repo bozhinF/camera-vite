@@ -103,7 +103,7 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
       </div>
       <p className="basket-item__price">
         <span className="visually-hidden">Цена:</span>
-        {price.toLocaleString()} ₽
+        {price.toLocaleString('ru')} ₽
       </p>
       <div className="quantity">
         <button

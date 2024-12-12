@@ -42,6 +42,9 @@ export const productsSlice = createSlice({
     setBasket(state, action: PayloadAction<number[]>) {
       state.basket = action.payload;
     },
+    addItemToBasket(state, action: PayloadAction<number>) {
+      state.basket = [...state.basket, action.payload];
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -86,4 +89,5 @@ export const productsSlice = createSlice({
       }),
 });
 
-export const { setBasket, updateBasket } = productsSlice.actions;
+export const { setBasket, updateBasket, addItemToBasket } =
+  productsSlice.actions;

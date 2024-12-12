@@ -5,7 +5,6 @@ import ProductCard from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getAllProducts } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
-import CallItemModal from '../../components/call-item-modal/call-item-modal';
 import {
   HandleFilterChange,
   Product,
@@ -33,6 +32,7 @@ import {
   sort,
 } from '../../util/util';
 import Pagination from '../../components/pagination/pagination';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
 
 const MAX_PRODUCTS_CARD_ON_PAGE = 9;
 
@@ -227,7 +227,7 @@ function CatalogPage(): JSX.Element {
       </Helmet>
       {isModalOpen && (
         <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
-          <CallItemModal
+          <AddItemModal
             callItem={callItem}
             onCloseButtonClick={handleModalClose}
           />
