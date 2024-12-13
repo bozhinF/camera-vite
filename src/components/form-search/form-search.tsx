@@ -4,6 +4,13 @@ import { getAllProducts } from '../../store/products-slice/selectors';
 import { AppRoute } from '../../const/const';
 import { Products } from '../../types/types';
 import { useNavigate } from 'react-router-dom';
+import CloseButton from '../close-button/close-button';
+
+enum CloseButtonOption {
+  Text = 'Сбросить поиск',
+  ClassName = 'form-search__reset',
+  Type = 'reset',
+}
 
 const NUMBER_OF_CHARACTERS_TO_SERCH = 3;
 
@@ -159,16 +166,12 @@ function FormSearch(): JSX.Element {
           </ul>
         )}
       </form>
-      <button
-        className="form-search__reset"
-        type="reset"
+      <CloseButton
+        text={CloseButtonOption.Text}
+        className={CloseButtonOption.ClassName}
+        type={CloseButtonOption.Type}
         onClick={handleResetButtonClick}
-      >
-        <svg width="10" height="10" aria-hidden="true">
-          <use xlinkHref="#icon-close"></use>
-        </svg>
-        <span className="visually-hidden">Сбросить поиск</span>
-      </button>
+      />
     </div>
   );
 }

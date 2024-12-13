@@ -10,6 +10,8 @@ import ProductPrice from '../product-price/product-price';
 import ProductDescription from '../product-description/product-description';
 import CloseButton from '../close-button/close-button';
 
+const CLOSE_BUTTON_LABEL = 'Закрыть попап';
+
 type AddItemModalProps = {
   addItem: Product | null;
   onCloseButtonClick: () => void;
@@ -123,7 +125,7 @@ function AddItemModal({
           Добавить в корзину
         </button>
       </div>
-      <CloseButton ref={closeButtonRef} />
+      <CloseButton label={CLOSE_BUTTON_LABEL} ref={closeButtonRef} />
     </div>
   );
 }

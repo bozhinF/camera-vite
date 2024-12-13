@@ -11,6 +11,8 @@ import ProductDescription from '../product-description/product-description';
 import ProductPrice from '../product-price/product-price';
 import CloseButton from '../close-button/close-button';
 
+const CLOSE_BUTTON_LABEL = 'Закрыть попап';
+
 type CallItemModalProps = {
   callItem: Product | null;
   onCloseButtonClick: () => void;
@@ -166,7 +168,7 @@ function CallItemModal({
           Заказать
         </button>
       </div>
-      <CloseButton ref={closeButtonRef} />
+      <CloseButton label={CLOSE_BUTTON_LABEL} ref={closeButtonRef} />
     </div>
   );
 }

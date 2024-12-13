@@ -8,15 +8,17 @@ import ProductDescription from '../product-description/product-description';
 import ProductPrice from '../product-price/product-price';
 import CloseButton from '../close-button/close-button';
 
-type BasketItemProps = {
-  product: Product;
-  amount: number;
-};
+const CLOSE_BUTTON_LABEL = 'Удалить товар';
 
 enum Quantity {
   Min = 1,
   Max = 9,
 }
+
+type BasketItemProps = {
+  product: Product;
+  amount: number;
+};
 
 function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
   const { id, price } = product;
@@ -108,7 +110,10 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
         <span className="visually-hidden">Общая цена:</span>
         {(quantity * price).toLocaleString()} ₽
       </div>
-      <CloseButton onClick={handleCloseButtonClick} />
+      <CloseButton
+        label={CLOSE_BUTTON_LABEL}
+        onClick={handleCloseButtonClick}
+      />
     </li>
   );
 }
