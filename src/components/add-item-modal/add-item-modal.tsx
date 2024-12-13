@@ -6,6 +6,8 @@ import { addItemToBasket } from '../../store/products-slice/products-slice';
 import { useElementListener } from '../../hooks/use-element-listener';
 import { useWindowListener } from '../../hooks/use-window-listener';
 import ProductImage from '../product-image/product-image';
+import ProductPrice from '../product-price/product-price';
+import ProductDescription from '../product-description/product-description';
 
 type AddItemModalProps = {
   addItem: Product | null;
@@ -95,8 +97,6 @@ function AddItemModal({
     return <SomethingWrongModal onCloseButtonClick={onCloseButtonClick} />;
   }
 
-  const { name, vendorCode, type, category, level, price } = addItem;
-
   return (
     <div className="modal__content">
       <p className="title title--h4">Добавить товар в корзину</p>
@@ -104,27 +104,9 @@ function AddItemModal({
         <div className="basket-item__img">
           <ProductImage image={addItem} />
         </div>
-        <div className="basket-item__description">
-          <p className="basket-item__title">{name}</p>
-          <ul className="basket-item__list">
-            <li className="basket-item__list-item">
-              <span className="basket-item__article">Артикул:</span>{' '}
-              <span className="basket-item__number">{vendorCode}</span>
-            </li>
-            <li className="basket-item__list-item">
-              {`${type} ${
-                category === 'Фотоаппарат'
-                  ? 'фотокамера'
-                  : category.toLowerCase()
-              }`}
-            </li>
-            <li className="basket-item__list-item">{level} уровень</li>
-          </ul>
-          <p className="basket-item__price">
-            <span className="visually-hidden">Цена:</span>
-            {price.toLocaleString('ru')} ₽
-          </p>
-        </div>
+        <ProductDescription product={addItem}>
+          <ProductPrice product={addItem} />
+        </ProductDescription>
       </div>
       <div className="modal__buttons">
         <button

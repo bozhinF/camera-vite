@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getBasket } from '../../store/products-slice/selectors';
 import { updateBasket } from '../../store/products-slice/products-slice';
 import ProductImage from '../product-image/product-image';
+import ProductDescription from '../product-description/product-description';
+import ProductPrice from '../product-price/product-price';
 
 type BasketItemProps = {
   product: Product;
@@ -16,7 +18,7 @@ enum Quantity {
 }
 
 function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
-  const { id, name, vendorCode, type, category, level, price } = product;
+  const { id, price } = product;
 
   const dispatch = useAppDispatch();
   const basket = useAppSelector(getBasket);
@@ -62,39 +64,9 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
     <li className="basket-item">
       <div className="basket-item__img">
         <ProductImage image={product} />
-        {/* <picture>
-          <source
-            type="image/webp"
-            srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
-          />
-          <img
-            src={`/${previewImg}`}
-            srcSet={`/${previewImg2x} 2x`}
-            width={140}
-            height={120}
-            alt={name}
-          />
-        </picture> */}
       </div>
-      <div className="basket-item__description">
-        <p className="basket-item__title">{name}</p>
-        <ul className="basket-item__list">
-          <li className="basket-item__list-item">
-            <span className="basket-item__article">Артикул:</span>{' '}
-            <span className="basket-item__number">{vendorCode}</span>
-          </li>
-          <li className="basket-item__list-item">
-            {`${type} ${
-              category === 'Фотоаппарат' ? 'фотокамера' : category.toLowerCase()
-            }`}
-          </li>
-          <li className="basket-item__list-item">{level} уровень</li>
-        </ul>
-      </div>
-      <p className="basket-item__price">
-        <span className="visually-hidden">Цена:</span>
-        {price.toLocaleString('ru')} ₽
-      </p>
+      <ProductDescription product={product} />
+      <ProductPrice product={product} />
       <div className="quantity">
         <button
           className="btn-icon btn-icon--prev"

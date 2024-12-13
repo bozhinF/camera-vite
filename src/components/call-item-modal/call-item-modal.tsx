@@ -7,6 +7,8 @@ import { useAppDispatch } from '../../hooks';
 import { postOrder } from '../../store/products-slice/thunks';
 import { useElementListener } from '../../hooks/use-element-listener';
 import ProductImage from '../product-image/product-image';
+import ProductDescription from '../product-description/product-description';
+import ProductPrice from '../product-price/product-price';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -133,8 +135,6 @@ function CallItemModal({
     return <SomethingWrongModal onCloseButtonClick={onCloseButtonClick} />;
   }
 
-  const { name, vendorCode, type, category, level, price } = callItem;
-
   return (
     <div className="modal__content">
       <p className="title title--h4">Свяжитесь со мной</p>
@@ -142,27 +142,9 @@ function CallItemModal({
         <div className="basket-item__img">
           <ProductImage image={callItem} />
         </div>
-        <div className="basket-item__description">
-          <p className="basket-item__title">{name}</p>
-          <ul className="basket-item__list">
-            <li className="basket-item__list-item">
-              <span className="basket-item__article">Артикул:</span>{' '}
-              <span className="basket-item__number">{vendorCode}</span>
-            </li>
-            <li className="basket-item__list-item">
-              {`${type} ${
-                category === 'Фотоаппарат'
-                  ? 'фотокамера'
-                  : category.toLowerCase()
-              }`}
-            </li>
-            <li className="basket-item__list-item">{level} уровень</li>
-          </ul>
-          <p className="basket-item__price">
-            <span className="visually-hidden">Цена:</span>
-            {price.toLocaleString('ru')} ₽
-          </p>
-        </div>
+        <ProductDescription product={callItem}>
+          <ProductPrice product={callItem} />
+        </ProductDescription>
       </div>
       <PhoneInput
         autofocus
