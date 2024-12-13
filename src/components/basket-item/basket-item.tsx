@@ -6,6 +6,7 @@ import { updateBasket } from '../../store/products-slice/products-slice';
 import ProductImage from '../product-image/product-image';
 import ProductDescription from '../product-description/product-description';
 import ProductPrice from '../product-price/product-price';
+import CloseButton from '../close-button/close-button';
 
 type BasketItemProps = {
   product: Product;
@@ -29,6 +30,11 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
     setQuantity((prev) => (prev <= Quantity.Min ? prev : prev - 1));
   const handleNextButtonClick = () =>
     setQuantity((prev) => (prev >= Quantity.Max ? prev : prev + 1));
+
+  const handleCloseButtonClick = () => {
+    const update = [...basket].filter((productId) => productId !== id);
+    dispatch(updateBasket(update));
+  };
 
   const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
     event
@@ -102,19 +108,7 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
         <span className="visually-hidden">Общая цена:</span>
         {(quantity * price).toLocaleString()} ₽
       </div>
-      <button
-        className="cross-btn"
-        type="button"
-        aria-label="Удалить товар"
-        onClick={() => {
-          const update = [...basket].filter((productId) => productId !== id);
-          dispatch(updateBasket(update));
-        }}
-      >
-        <svg width={10} height={10} aria-hidden="true">
-          <use xlinkHref="#icon-close" />
-        </svg>
-      </button>
+      <CloseButton onClick={handleCloseButtonClick} />
     </li>
   );
 }

@@ -8,6 +8,7 @@ import { useWindowListener } from '../../hooks/use-window-listener';
 import ProductImage from '../product-image/product-image';
 import ProductPrice from '../product-price/product-price';
 import ProductDescription from '../product-description/product-description';
+import CloseButton from '../close-button/close-button';
 
 type AddItemModalProps = {
   addItem: Product | null;
@@ -122,16 +123,7 @@ function AddItemModal({
           Добавить в корзину
         </button>
       </div>
-      <button
-        className="cross-btn"
-        type="button"
-        aria-label="Закрыть попап"
-        ref={closeButtonRef}
-      >
-        <svg width="10" height="10" aria-hidden="true">
-          <use xlinkHref="#icon-close"></use>
-        </svg>
-      </button>
+      <CloseButton ref={closeButtonRef} />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { useElementListener } from '../../hooks/use-element-listener';
 import ProductImage from '../product-image/product-image';
 import ProductDescription from '../product-description/product-description';
 import ProductPrice from '../product-price/product-price';
+import CloseButton from '../close-button/close-button';
 
 type CallItemModalProps = {
   callItem: Product | null;
@@ -165,16 +166,7 @@ function CallItemModal({
           Заказать
         </button>
       </div>
-      <button
-        className="cross-btn"
-        type="button"
-        aria-label="Закрыть попап"
-        ref={closeButtonRef}
-      >
-        <svg width={10} height={10} aria-hidden="true">
-          <use xlinkHref="#icon-close" />
-        </svg>
-      </button>
+      <CloseButton ref={closeButtonRef} />
     </div>
   );
 }
