@@ -3,7 +3,10 @@ import Banner from '../../components/banner/banner';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import ProductCard from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getAllProducts } from '../../store/products-slice/selectors';
+import {
+  getAllProducts,
+  getBasket,
+} from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
 import {
   HandleFilterChange,
@@ -43,6 +46,7 @@ function CatalogPage(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const products = useAppSelector(getAllProducts);
+  const basket = useAppSelector(getBasket);
   const filterState = useAppSelector(getFilterParams);
 
   const isMounted = useRef(false);
@@ -254,13 +258,17 @@ function CatalogPage(): JSX.Element {
                   onSortChange={handleFilterChange}
                 />
                 <div className="cards catalog__cards">
-                  {currentPageProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onBuyButtonClick={handleBuyButtonClick}
-                    />
-                  ))}
+                  {currentPageProducts.map((product) => {
+                    const isInBasket = basket.includes(product.id);
+                    return (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        isInBasket={isInBasket}
+                        onBuyButtonClick={handleBuyButtonClick}
+                      />
+                    );
+                  })}
                 </div>
                 <Pagination
                   currentPage={currentPage}
