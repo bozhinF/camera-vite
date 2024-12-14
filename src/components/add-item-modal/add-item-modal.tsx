@@ -15,11 +15,13 @@ const CLOSE_BUTTON_LABEL = 'Закрыть попап';
 type AddItemModalProps = {
   addItem: Product | null;
   onCloseButtonClick: () => void;
+  onBuyButtonClick: () => void;
 };
 
 function AddItemModal({
   addItem,
   onCloseButtonClick,
+  onBuyButtonClick,
 }: AddItemModalProps): JSX.Element {
   const dispatch = useAppDispatch();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -77,7 +79,7 @@ function AddItemModal({
     setIsBuyButtonDisabled(true);
     const { id } = addItem;
     dispatch(addItemToBasket(id));
-    onCloseButtonClick();
+    onBuyButtonClick();
     setIsBuyButtonDisabled(false);
   };
 

@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { Product } from '../../types/types';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getBasket } from '../../store/products-slice/selectors';
-import { updateBasket } from '../../store/products-slice/products-slice';
+import {
+  addItemToBasket,
+  removeItemFromBasket,
+  updateBasket,
+} from '../../store/products-slice/products-slice';
 import ProductImage from '../product-image/product-image';
 import ProductDescription from '../product-description/product-description';
 import ProductPrice from '../product-price/product-price';
@@ -28,10 +32,18 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
 
   const [quantity, setQuantity] = useState<number>(amount);
 
-  const handlePrevButtonClick = () =>
+  const handlePrevButtonClick = () => {
     setQuantity((prev) => (prev <= Quantity.Min ? prev : prev - 1));
-  const handleNextButtonClick = () =>
+    if (quantity > Quantity.Min) {
+      dispatch(removeItemFromBasket(id));
+    }
+  };
+  const handleNextButtonClick = () => {
     setQuantity((prev) => (prev >= Quantity.Max ? prev : prev + 1));
+    if (quantity < Quantity.Max) {
+      dispatch(addItemToBasket(id));
+    }
+  };
 
   const handleCloseButtonClick = () => {
     const update = [...basket].filter((productId) => productId !== id);
@@ -41,13 +53,22 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
   const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
     event
   ) => {
-    if (
-      !isNaN(+event.key) &&
-      +event.key >= Quantity.Min &&
-      +event.key <= Quantity.Max
-    ) {
+    const input = +event.key;
+    if (!isNaN(input) && input >= Quantity.Min && input <= Quantity.Max) {
       event.preventDefault();
-      setQuantity(+event.key);
+      if (input !== quantity) {
+        setQuantity(input);
+        const index = basket.indexOf(id);
+        if (index === -1) {
+          return;
+        }
+        const update = [
+          ...basket.slice(0, index),
+          ...Array.from({ length: input }, () => id),
+          ...basket.slice(index + 1).filter((productId) => productId !== id),
+        ];
+        dispatch(updateBasket(update));
+      }
     }
   };
 

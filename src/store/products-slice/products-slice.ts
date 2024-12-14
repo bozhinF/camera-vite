@@ -43,7 +43,20 @@ export const productsSlice = createSlice({
       state.basket = action.payload;
     },
     addItemToBasket(state, action: PayloadAction<number>) {
-      state.basket = [...state.basket, action.payload];
+      const result = [...state.basket, action.payload];
+      state.basket = result;
+      saveLocalBasket(result);
+    },
+    removeItemFromBasket(state, action: PayloadAction<number>) {
+      const id = action.payload;
+      const basket = state.basket;
+      const index = basket.lastIndexOf(id);
+      if (index === -1) {
+        return;
+      }
+      const result = [...basket.slice(0, index), ...basket.slice(index + 1)];
+      state.basket = result;
+      saveLocalBasket(result);
     },
   },
   extraReducers: (builder) =>
@@ -89,5 +102,9 @@ export const productsSlice = createSlice({
       }),
 });
 
-export const { setBasket, updateBasket, addItemToBasket } =
-  productsSlice.actions;
+export const {
+  setBasket,
+  updateBasket,
+  addItemToBasket,
+  removeItemFromBasket,
+} = productsSlice.actions;

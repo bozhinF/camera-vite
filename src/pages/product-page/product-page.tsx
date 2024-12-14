@@ -1,6 +1,6 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   fetchProduct,
   fetchProductReviews,
@@ -29,6 +29,9 @@ import { HandleFilterChange, SetFilterStateOptions } from '../../types/types';
 import { getObjectKeys, setFilterStateFromParams } from '../../util/util';
 import { updateBasket } from '../../store/products-slice/products-slice';
 import ProductImage from '../../components/product-image/product-image';
+import Portal from '../../components/portal/portal';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
+import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 
 enum ImageSize {
   Width = 140,
@@ -51,6 +54,8 @@ function ProductPage(): JSX.Element {
   ).length;
 
   const isMounted = useRef(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isAddModalActive, setModalActive] = useState(true);
 
   function setFilterState<
     T extends FilterState,
@@ -158,12 +163,40 @@ function ProductPage(): JSX.Element {
     left: 0,
   });
 
+  const handleBuyButtonClick = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setModalActive(true);
+  };
+  const handleAddButtonClick = () => {
+    if (countProuductInBasket < 9) {
+      dispatch(updateBasket([...basket, productDetails.id]));
+      setModalActive(false);
+    }
+  };
+
   return (
     <>
       <main>
         <Helmet>
           <title>Продукт - Фотошоп</title>
         </Helmet>
+        {isModalOpen && (
+          <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
+            {isAddModalActive ? (
+              <AddItemModal
+                addItem={productDetails}
+                onCloseButtonClick={handleModalClose}
+                onBuyButtonClick={handleAddButtonClick}
+              />
+            ) : (
+              <AddItemSuccessModal onCloseButtonClick={handleModalClose} />
+            )}
+          </Portal>
+        )}
         <div className="page-content">
           <Breadcrumbs tip={name} />
           <div className="page-content__section">
@@ -187,7 +220,7 @@ function ProductPage(): JSX.Element {
                     type="button"
                     onClick={() => {
                       if (countProuductInBasket < 9) {
-                        dispatch(updateBasket([...basket, productDetails.id]));
+                        handleBuyButtonClick();
                       }
                     }}
                   >

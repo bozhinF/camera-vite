@@ -36,6 +36,7 @@ import {
 } from '../../util/util';
 import Pagination from '../../components/pagination/pagination';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
+import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 
 const MAX_PRODUCTS_CARD_ON_PAGE = 9;
 
@@ -52,6 +53,7 @@ function CatalogPage(): JSX.Element {
   const isMounted = useRef(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addItem, setAddItem] = useState<Product | null>(null);
+  const [isAddModalActive, setModalActive] = useState(true);
 
   const currentPage = filterState.page ? filterState.page : 1;
   const sortValue = filterState.sort;
@@ -222,6 +224,10 @@ function CatalogPage(): JSX.Element {
   const handleModalClose = () => {
     setModalOpen(false);
     setAddItem(null);
+    setModalActive(true);
+  };
+  const handleAddButtonClick = () => {
+    setModalActive(false);
   };
 
   return (
@@ -231,10 +237,15 @@ function CatalogPage(): JSX.Element {
       </Helmet>
       {isModalOpen && (
         <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
-          <AddItemModal
-            addItem={addItem}
-            onCloseButtonClick={handleModalClose}
-          />
+          {isAddModalActive ? (
+            <AddItemModal
+              addItem={addItem}
+              onCloseButtonClick={handleModalClose}
+              onBuyButtonClick={handleAddButtonClick}
+            />
+          ) : (
+            <AddItemSuccessModal onCloseButtonClick={handleModalClose} />
+          )}
         </Portal>
       )}
 
