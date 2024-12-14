@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom';
 import FormSearch from '../form-search/form-search';
-import { AppRoute } from '../../const/const';
+import HeaderBasketLink from '../header-basket-link/header-basket-link';
 
 function Header(): JSX.Element {
   return (
@@ -40,11 +39,7 @@ function Header(): JSX.Element {
           </ul>
         </nav>
         <FormSearch />
-        <Link className="header__basket-link" to={AppRoute.Basket}>
-          <svg width="16" height="16" aria-hidden="true">
-            <use xlinkHref="#icon-basket"></use>
-          </svg>
-        </Link>
+        <HeaderBasketLink />
       </div>
     </header>
   );
