@@ -104,11 +104,7 @@ export const assignValue = <T extends Record<K, unknown>, K extends keyof T>(
 export const setFilterStateFromParams = <
   T extends Record<K, unknown>,
   K extends keyof T
->(
-    currentFilter: T,
-    currentOptions: PossibleFilterItemValues<T>,
-    searchParams: URLSearchParams
-  ) => {
+>(currentFilter: T, currentOptions: PossibleFilterItemValues<T>, searchParams: URLSearchParams) => {
   const filterKeys = getObjectKeys(currentFilter);
   const invalidParams: updateURLProps = [];
   filterKeys.forEach((key) => {
@@ -184,3 +180,39 @@ export const getSelectedFilterOptions = (filterState: FilterState): string[] =>
     }
     return [...options, key];
   }, []);
+
+export const discountIncreaser = (count: number, discount = 0) => {
+  if (count === 1) {
+    return discount;
+  }
+  if (count === 2) {
+    const result = discount + 3;
+    return result;
+  }
+  if (count >= 3 && count <= 5) {
+    const result = discount + 5;
+    return result;
+  }
+  if (count >= 6 && count <= 10) {
+    const result = discount + 10;
+    return result;
+  }
+  const result = discount + 15;
+  return result;
+};
+
+export const discountDecreaser = (price: number, discount = 0) => {
+  if (price < 10000) {
+    return discount;
+  }
+  if (price >= 10000 && price <= 20000) {
+    const result = Math.max(discount - 1, 0);
+    return result;
+  }
+  if (price >= 20000 && price <= 30000) {
+    const result = Math.max(discount - 2, 0);
+    return result;
+  }
+  const result = Math.max(discount - 3, 0);
+  return result;
+};
