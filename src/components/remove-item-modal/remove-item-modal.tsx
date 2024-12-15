@@ -84,6 +84,9 @@ function RemoveItemModal({
     dispatch(updateBasket(update));
     onCloseButtonClick();
     setRemoveButtonDisabled(false);
+    if (!update.length) {
+      navigate(AppRoute.Catalog);
+    }
   };
 
   useElementListener('click', closeButtonRef, onCloseButtonClick);
