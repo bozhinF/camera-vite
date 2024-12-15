@@ -22,9 +22,14 @@ enum Quantity {
 type BasketItemProps = {
   product: Product;
   amount: number;
+  onCloseButtonClick: (product: Product) => void;
 };
 
-function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
+function BasketItem({
+  product,
+  amount,
+  onCloseButtonClick,
+}: BasketItemProps): JSX.Element {
   const { id, price } = product;
 
   const dispatch = useAppDispatch();
@@ -43,11 +48,6 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
     if (quantity < Quantity.Max) {
       dispatch(addItemToBasket(id));
     }
-  };
-
-  const handleCloseButtonClick = () => {
-    const update = [...basket].filter((productId) => productId !== id);
-    dispatch(updateBasket(update));
   };
 
   const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
@@ -133,7 +133,7 @@ function BasketItem({ product, amount }: BasketItemProps): JSX.Element {
       </div>
       <CloseButton
         label={CLOSE_BUTTON_LABEL}
-        onClick={handleCloseButtonClick}
+        onClick={() => onCloseButtonClick(product)}
       />
     </li>
   );

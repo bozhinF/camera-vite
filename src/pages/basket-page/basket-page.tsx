@@ -1,17 +1,43 @@
+import { useState } from 'react';
 import BasketItem from '../../components/basket-item/basket-item';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import Portal from '../../components/portal/portal';
+import RemoveItemModal from '../../components/remove-item-modal/remove-item-modal';
 import { useAppSelector } from '../../hooks';
 import {
   getAllProducts,
   getBasket,
 } from '../../store/products-slice/selectors';
+import { Product } from '../../types/types';
 
 function BasketPage(): JSX.Element {
   const products = useAppSelector(getAllProducts);
   const basket = useAppSelector(getBasket);
   const uniqueBasket = new Set(basket);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [removeItem, setRemoveItem] = useState<Product | null>(null);
+
+  const handleCloseButtonClick = (product: Product) => {
+    setRemoveItem(product);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setRemoveItem(null);
+  };
+
   return (
     <main>
+      {isModalOpen && (
+        <Portal isOpen={isModalOpen} onModalClose={handleModalClose}>
+          <RemoveItemModal
+            removeItem={removeItem}
+            onCloseButtonClick={handleModalClose}
+          />
+        </Portal>
+      )}
       <div className="page-content">
         <Breadcrumbs />
         <section className="basket">
@@ -29,6 +55,7 @@ function BasketPage(): JSX.Element {
                       key={productId}
                       product={productItem}
                       amount={amount}
+                      onCloseButtonClick={handleCloseButtonClick}
                     />
                   );
                 }
