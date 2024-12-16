@@ -58,6 +58,9 @@ export const productsSlice = createSlice({
       state.basket = result;
       saveLocalBasket(result);
     },
+    resetPostOrderStatus(state) {
+      state.postOrderStatus = RequestStatus.Idle;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -107,4 +110,5 @@ export const {
   updateBasket,
   addItemToBasket,
   removeItemFromBasket,
+  resetPostOrderStatus,
 } = productsSlice.actions;

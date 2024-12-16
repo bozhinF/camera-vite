@@ -5,22 +5,28 @@ import { useWindowListener } from '../../hooks/use-window-listener';
 
 type PortalProps = {
   isOpen?: boolean;
+  blocked?: boolean;
   onModalClose: () => void;
   children: React.ReactNode;
 };
 
-function Portal({ isOpen, onModalClose, children }: PortalProps) {
+function Portal({
+  isOpen,
+  blocked = false,
+  onModalClose,
+  children,
+}: PortalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const handleOverlayClick = (event: MouseEvent) => {
-    if (overlayRef.current && event.target === overlayRef.current) {
+    if (overlayRef.current && event.target === overlayRef.current && !blocked) {
       onModalClose();
     }
   };
 
   const handleEscKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && !blocked) {
       onModalClose();
     }
   };

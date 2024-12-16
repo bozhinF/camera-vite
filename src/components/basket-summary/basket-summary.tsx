@@ -1,7 +1,9 @@
+import { RequestStatus } from '../../const/const';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
   getAllProducts,
   getBasket,
+  getPostOrderStatus,
 } from '../../store/products-slice/selectors';
 import { postOrder } from '../../store/products-slice/thunks';
 import { Order } from '../../types/types';
@@ -21,6 +23,7 @@ function BasketSummary(): JSX.Element {
   discountPercent = discountDecreaser(allProuductsPrice, discountPercent);
   const discount = (allProuductsPrice * discountPercent) / 100;
   const total = allProuductsPrice - discount;
+  const status = useAppSelector(getPostOrderStatus);
 
   return (
     <div className="basket__summary">
@@ -76,7 +79,7 @@ function BasketSummary(): JSX.Element {
         <button
           className="btn btn--purple"
           type="submit"
-          disabled={!basket.length}
+          disabled={!basket.length || status === RequestStatus.Loading}
           onClick={() => {
             const order: Order = { camerasIds: basket, coupon: null };
             dispatch(postOrder({ order }));
