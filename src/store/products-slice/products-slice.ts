@@ -88,7 +88,7 @@ export const productsSlice = createSlice({
         state.productReviewsStatus = RequestStatus.Loading;
       })
       .addCase(fetchProductReviews.fulfilled, (state, action) => {
-        state.productDetailsStatus = RequestStatus.Success;
+        state.productReviewsStatus = RequestStatus.Success;
         state.productReviews = action.payload;
       })
       .addCase(fetchProductReviews.rejected, (state) => {
