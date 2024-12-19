@@ -1,0 +1,53 @@
+import { State } from '../types/state';
+import { createApi } from '../services/api';
+import { ThunkDispatch } from 'redux-thunk';
+import { Action } from 'redux';
+import { Order, Product, Review } from '../types/types';
+import { commerce, datatype, helpers, image, lorem, name } from 'faker';
+
+export type AppThunkDispatch = ThunkDispatch<
+  State,
+  ReturnType<typeof createApi>,
+  Action
+>;
+
+export const extractActionsTypes = (actions: Action<string>[]) =>
+  actions.map(({ type }) => type);
+
+export const getMockProduct = (): Product => ({
+  id: datatype.number(10),
+  name: commerce.productName(),
+  vendorCode: datatype.uuid(),
+  type: helpers.randomize([
+    'Цифровая',
+    'Плёночная',
+    'Моментальная',
+    'Коллекционная',
+  ]),
+  category: helpers.randomize(['Фотоаппарат', 'Видеокамера']),
+  description: lorem.paragraph(),
+  level: helpers.randomize(['Нулевой', 'Любительский', 'Профессиональный']),
+  price: +commerce.price(1990, 199990),
+  rating: datatype.number(5),
+  reviewCount: datatype.number(10),
+  previewImg: image.image(),
+  previewImg2x: image.imageUrl(),
+  previewImgWebp: image.image(),
+  previewImgWebp2x: image.image(),
+});
+
+export const getMockReview = (): Review => ({
+  id: datatype.uuid(),
+  createAt: datatype.datetime().toLocaleString(),
+  cameraId: datatype.number(10),
+  userName: name.firstName(),
+  advantage: lorem.sentence(),
+  disadvantage: lorem.sentence(),
+  review: lorem.paragraph(),
+  rating: datatype.number(5),
+});
+
+export const getMockOrder = (): Order => ({
+  camerasIds: [datatype.number(10)],
+  coupon: null,
+});

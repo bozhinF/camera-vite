@@ -1,5 +1,5 @@
 import { RequestStatus } from '../../const/const';
-import { getMockProduct, getMockReview } from '../../util/util';
+import { getMockProduct, getMockReview } from '../../util/mocks';
 import {
   addItemToBasket,
   productsSlice,

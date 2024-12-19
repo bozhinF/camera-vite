@@ -3,13 +3,10 @@ import {
   Entries,
   FitlerOptions,
   PossibleFilterItemValues,
-  Product,
   Products,
-  Review,
   Reviews,
   updateURLProps,
 } from '../types/types';
-import { commerce, datatype, helpers, image, lorem, name } from 'faker';
 
 export const capitalize = (string: string): string =>
   string[0].toUpperCase() + string.slice(1);
@@ -218,45 +215,4 @@ export const discountDecreaser = (price: number, discount = 0) => {
   }
   const result = Math.max(discount - 3, 0);
   return result;
-};
-
-export const getMockProduct = (): Product => {
-  const product: Product = {
-    id: datatype.number(10),
-    name: commerce.productName(),
-    vendorCode: datatype.uuid(),
-    type: helpers.randomize([
-      'Цифровая',
-      'Плёночная',
-      'Моментальная',
-      'Коллекционная',
-    ]),
-    category: helpers.randomize(['Фотоаппарат', 'Видеокамера']),
-    description: lorem.paragraph(),
-    level: helpers.randomize(['Нулевой', 'Любительский', 'Профессиональный']),
-    price: +commerce.price(1990, 199990),
-    rating: datatype.number(5),
-    reviewCount: datatype.number(10),
-    previewImg: image.image(),
-    previewImg2x: image.imageUrl(),
-    previewImgWebp: image.image(),
-    previewImgWebp2x: image.image(),
-  };
-
-  return product;
-};
-
-export const getMockReview = (): Review => {
-  const review: Review = {
-    id: datatype.uuid(),
-    createAt: datatype.datetime().toLocaleString(),
-    cameraId: datatype.number(10),
-    userName: name.firstName(),
-    advantage: lorem.sentence(),
-    disadvantage: lorem.sentence(),
-    review: lorem.paragraph(),
-    rating: datatype.number(5),
-  };
-
-  return review;
 };
