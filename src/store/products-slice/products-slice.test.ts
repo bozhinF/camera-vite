@@ -14,6 +14,7 @@ import {
   fetchProductReviews,
   postOrder,
 } from './thunks';
+import * as basketStorage from '../../services/basket';
 
 describe('Products Slice', () => {
   const emptyAction = { type: '' };
@@ -210,6 +211,42 @@ describe('Products Slice', () => {
     };
     const result = productsSlice.reducer(state, removeItemFromBasket(2));
     expect(result).toEqual(expectedState);
+  });
+
+  it('should call "saveLocalBasket" once with an array of numbers with "updateBasket" action', () => {
+    const basket = products.map((item) => item.id);
+    const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+
+    productsSlice.reducer(undefined, updateBasket(basket));
+
+    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledWith(basket);
+  });
+
+  it('should call "saveLocalBasket" once with an array of numbers with "addItemToBasket" action', () => {
+    const productId = 11;
+    const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+
+    productsSlice.reducer(undefined, addItemToBasket(productId));
+
+    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledWith([productId]);
+  });
+
+  it('should call "saveLocalBasket" once with an array of numbers with "removeItemFromBasket" action', () => {
+    const basket = [1, 2, 2, 3, 3, 3];
+    const expectedBasket = [1, 2, 3, 3, 3];
+    const productId = 2;
+    const state = {
+      ...initialState,
+      basket,
+    };
+    const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+
+    productsSlice.reducer(state, removeItemFromBasket(productId));
+
+    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledWith(expectedBasket);
   });
 
   it('should reset postOrderStatus with "resetPostOrderStatus" action', () => {
