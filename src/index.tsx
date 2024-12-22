@@ -6,6 +6,8 @@ import { store } from './store';
 import { fetchAllProducts } from './store/products-slice/thunks';
 import { getLocalBasket } from './services/basket';
 import { setBasket } from './store/products-slice/products-slice';
+import HistoryRouter from './components/history-route/history-route';
+import browserHistory from './browser-history';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -20,7 +22,9 @@ if (basket.length) {
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <HistoryRouter history={browserHistory}>
+        <App />
+      </HistoryRouter>
     </Provider>
   </React.StrictMode>
 );

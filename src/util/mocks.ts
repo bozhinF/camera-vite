@@ -4,6 +4,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { Action } from 'redux';
 import { Order, Product, Review } from '../types/types';
 import { commerce, datatype, helpers, image, lorem, name } from 'faker';
+import { FilterOption, NameSpace, RequestStatus } from '../const/const';
 
 export type AppThunkDispatch = ThunkDispatch<
   State,
@@ -50,4 +51,29 @@ export const getMockReview = (): Review => ({
 export const getMockOrder = (): Order => ({
   camerasIds: [datatype.number(10)],
   coupon: null,
+});
+
+export const getMockStore = (initialState?: Partial<State>): State => ({
+  [NameSpace.Filter]: {
+    sort: FilterOption.sort[0].value,
+    order: FilterOption.order[0].value,
+    price: null,
+    priceUp: null,
+    category: '',
+    type: [],
+    level: [],
+    page: null,
+    tab: FilterOption.tab[0].value,
+  },
+  [NameSpace.Products]: {
+    allProductsStatus: RequestStatus.Idle,
+    allProducts: [],
+    productDetailsStatus: RequestStatus.Idle,
+    productDetails: null,
+    productReviewsStatus: RequestStatus.Idle,
+    productReviews: [],
+    basket: [],
+    postOrderStatus: RequestStatus.Idle,
+  },
+  ...(initialState ?? {}),
 });
