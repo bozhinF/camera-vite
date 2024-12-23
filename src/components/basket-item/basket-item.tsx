@@ -100,6 +100,7 @@ function BasketItem({
         <button
           className="btn-icon btn-icon--prev"
           aria-label="уменьшить количество товара"
+          disabled={quantity === Quantity.Min}
           onClick={handlePrevButtonClick}
         >
           <svg width={7} height={12} aria-hidden="true">
@@ -116,10 +117,12 @@ function BasketItem({
           min={Quantity.Min}
           max={Quantity.Max}
           aria-label="количество товара"
+          data-testid="quantity"
         />
         <button
           className="btn-icon btn-icon--next"
           aria-label="увеличить количество товара"
+          disabled={quantity === Quantity.Max}
           onClick={handleNextButtonClick}
         >
           <svg width={7} height={12} aria-hidden="true">
