@@ -62,8 +62,14 @@ function OrderSuccessModal({
       lastFocused.focus();
     }
   };
+  const handleCloseButtonClick = () => {
+    onCloseButtonClick();
+    if (pathname !== AppRoute.Catalog) {
+      navigate(AppRoute.Catalog);
+    }
+  };
 
-  useElementListener('click', closeButtonRef, onCloseButtonClick);
+  useElementListener('click', closeButtonRef, handleCloseButtonClick);
 
   useWindowListener(
     'keydown',
@@ -85,6 +91,7 @@ function OrderSuccessModal({
       </svg>
       <div className="modal__buttons">
         <button
+          autoFocus
           className="btn btn--purple modal__btn modal__btn--fit-width"
           type="button"
           ref={toShoppingButtonRef}

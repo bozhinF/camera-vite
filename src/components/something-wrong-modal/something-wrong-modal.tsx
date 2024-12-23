@@ -60,7 +60,7 @@ function SomethingWrongModal({
       <p className="basket-item__title">
         Что-то пошло не так. Вы можете вернуться к предыдущему шагу или
         обратиться в наш{' '}
-        <Link ref={linkRef} className="link" to="#">
+        <Link ref={linkRef} className="link" to="#" autoFocus>
           Справочный центр
         </Link>
         , если вам нужна помощь

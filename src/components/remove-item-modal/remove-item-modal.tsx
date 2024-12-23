@@ -10,6 +10,7 @@ import SomethingWrongModal from '../something-wrong-modal/something-wrong-modal'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppRoute } from '../../const/const';
 import { getBasket } from '../../store/products-slice/selectors';
+import ProductDescription from '../product-description/product-description';
 
 const CLOSE_BUTTON_LABEL = 'Закрыть попап';
 
@@ -115,17 +116,7 @@ function RemoveItemModal({
         <div className="basket-item__img">
           <ProductImage image={removeItem} />
         </div>
-        <div className="basket-item__description">
-          <p className="basket-item__title">Фотоаппарат «Орлёнок»</p>
-          <ul className="basket-item__list">
-            <li className="basket-item__list-item">
-              <span className="basket-item__article">Артикул:</span>{' '}
-              <span className="basket-item__number">O78DFGSD832</span>
-            </li>
-            <li className="basket-item__list-item">Плёночная фотокамера</li>
-            <li className="basket-item__list-item">Любительский уровень</li>
-          </ul>
-        </div>
+        <ProductDescription product={removeItem} />
       </div>
       <div className="modal__buttons">
         <button
