@@ -4,7 +4,7 @@ import { FilterState } from '../../store/filter-slice/filter-slice';
 import FilterCheckList from './filter-check-list';
 import { FilterOption } from '../../const/const';
 
-describe('FilterCheckList', () => {
+describe('Component: FilterCheckList', () => {
   const mockOnChange = vi.fn();
 
   const items: FilterOptionsItem = [
