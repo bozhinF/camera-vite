@@ -54,7 +54,7 @@ function BasketSummary(): JSX.Element {
       <div className="basket__summary-order">
         <p className="basket__summary-item">
           <span className="basket__summary-text">Всего:</span>
-          <span className="basket__summary-value">
+          <span className="basket__summary-value" data-testid={'total'}>
             {allProuductsPrice.toLocaleString('ru')} ₽
           </span>
         </p>
@@ -64,6 +64,7 @@ function BasketSummary(): JSX.Element {
             className={`basket__summary-value ${
               discount > 0 ? 'basket__summary-value--bonus' : ''
             }`}
+            data-testid={'discount'}
           >
             {discount.toLocaleString('ru')} ₽
           </span>
@@ -72,7 +73,10 @@ function BasketSummary(): JSX.Element {
           <span className="basket__summary-text basket__summary-text--total">
             К оплате:
           </span>
-          <span className="basket__summary-value basket__summary-value--total">
+          <span
+            className="basket__summary-value basket__summary-value--total"
+            data-testid={'paid'}
+          >
             {total.toLocaleString('ru')} ₽
           </span>
         </p>
