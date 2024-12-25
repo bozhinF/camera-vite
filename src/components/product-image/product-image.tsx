@@ -26,6 +26,7 @@ function ProductImage({ image, size }: ProductImageProps): JSX.Element {
       <source
         type="image/webp"
         srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
+        data-testid="source"
       />
       <img
         src={`/${previewImg}`}
