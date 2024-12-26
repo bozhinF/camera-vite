@@ -5,6 +5,7 @@ import { Action } from 'redux';
 import { Order, Product, Review } from '../types/types';
 import { commerce, datatype, helpers, image, lorem, name } from 'faker';
 import { FilterOption, NameSpace, RequestStatus } from '../const/const';
+import { FilterState } from '../store/filter-slice/filter-slice';
 
 export type AppThunkDispatch = ThunkDispatch<
   State,
@@ -77,4 +78,19 @@ export const getMockStore = (initialState?: Partial<State>): State => ({
     postOrderStatus: RequestStatus.Idle,
   },
   ...(initialState ?? {}),
+});
+
+export const getMockFilterState = (
+  initial: Partial<FilterState> = {}
+): FilterState => ({
+  sort: FilterOption.sort[0].value,
+  order: FilterOption.order[0].value,
+  price: null,
+  priceUp: null,
+  category: '',
+  type: [],
+  level: [],
+  page: null,
+  tab: FilterOption.tab[0].value,
+  ...initial,
 });
