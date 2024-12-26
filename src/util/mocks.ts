@@ -39,7 +39,7 @@ export const getMockProduct = (): Product => ({
 
 export const getMockReview = (initial: Partial<Review> = {}): Review => ({
   id: datatype.uuid(),
-  createAt: datatype.datetime().toLocaleString(),
+  createAt: datatype.datetime().toISOString(),
   cameraId: datatype.number(10),
   userName: name.firstName(),
   advantage: lorem.sentence(),

@@ -16,7 +16,7 @@ function ReviewItem({ reviewData }: ReviewItemProps): JSX.Element {
   });
   const dateTime = date.toISOString().slice(0, 10);
   return (
-    <li className="review-card">
+    <li className="review-card" data-testid="review-item">
       <div className="review-card__head">
         <p className="title title--h4">{userName}</p>
         <time className="review-card__data" dateTime={dateTime}>
