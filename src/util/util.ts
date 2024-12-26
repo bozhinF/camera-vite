@@ -216,3 +216,6 @@ export const discountDecreaser = (price: number, discount = 0) => {
   const result = Math.max(discount - 3, 0);
   return result;
 };
+
+export const divideNumberByPieces = (x: number, delimiter?: string): string =>
+  x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, delimiter || ' ');

@@ -59,7 +59,11 @@ function Portal({
   return createPortal(
     <div className="modal is-active">
       <div className="modal__wrapper">
-        <div className="modal__overlay" ref={overlayRef} />
+        <div
+          className="modal__overlay"
+          ref={overlayRef}
+          data-testid="overlay"
+        />
         {children}
       </div>
     </div>,
