@@ -3,7 +3,7 @@ import css from './loader-spinner.module.css';
 import LoaderSpinner from './loader-spinner';
 
 describe('Component: LoaderSpinner', () => {
-  test('shoul renders the loader spinner correctly', () => {
+  it('should renders the loader spinner correctly', () => {
     render(<LoaderSpinner />);
 
     const loader = screen.getByTestId('loader');
