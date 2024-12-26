@@ -12,9 +12,16 @@ function StarsRating({ rating, reviewCount }: StarsRatingProps): JSX.Element {
     >
       {Array.from({ length: RATING_STARS_COUNT }, (_, i) => i + 1).map(
         (number) => (
-          <svg key={number} width={17} height={16} aria-hidden="true">
+          <svg
+            key={number}
+            width={17}
+            height={16}
+            aria-hidden="true"
+            data-testid="star"
+          >
             <use
               xlinkHref={number > rating ? '#icon-star' : '#icon-full-star'}
+              data-testid="star-image"
             />
           </svg>
         )
