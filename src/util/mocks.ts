@@ -16,7 +16,7 @@ export type AppThunkDispatch = ThunkDispatch<
 export const extractActionsTypes = (actions: Action<string>[]) =>
   actions.map(({ type }) => type);
 
-export const getMockProduct = (): Product => ({
+export const getMockProduct = (initial: Partial<Product> = {}): Product => ({
   id: datatype.number(10),
   name: commerce.productName(),
   vendorCode: datatype.uuid(),
@@ -36,6 +36,7 @@ export const getMockProduct = (): Product => ({
   previewImg2x: image.imageUrl(),
   previewImgWebp: image.image(),
   previewImgWebp2x: image.image(),
+  ...initial,
 });
 
 export const getMockReview = (initial: Partial<Review> = {}): Review => ({

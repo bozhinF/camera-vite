@@ -32,7 +32,7 @@ function Tabs({ product, filterState, onChange }: TabsProps): JSX.Element {
     const tabType = Object.values(TabItem).find(
       ({ value }) => value === button.dataset.tabType
     );
-    if (tabType === undefined) {
+    if (tabType === undefined || tabType.value === activeTab.value) {
       return;
     }
     setActive(tabType);
