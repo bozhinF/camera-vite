@@ -37,7 +37,7 @@ export const getMockProduct = (): Product => ({
   previewImgWebp2x: image.image(),
 });
 
-export const getMockReview = (): Review => ({
+export const getMockReview = (initial: Partial<Review> = {}): Review => ({
   id: datatype.uuid(),
   createAt: datatype.datetime().toLocaleString(),
   cameraId: datatype.number(10),
@@ -46,6 +46,7 @@ export const getMockReview = (): Review => ({
   disadvantage: lorem.sentence(),
   review: lorem.paragraph(),
   rating: datatype.number(5),
+  ...initial,
 });
 
 export const getMockOrder = (): Order => ({
