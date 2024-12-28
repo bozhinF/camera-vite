@@ -1,5 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { Endpoint, NameSpace, RequestStatus } from '../../const/const';
+import {
+  ElementRole,
+  Endpoint,
+  NameSpace,
+  RequestStatus,
+} from '../../const/const';
 import { postOrder } from '../../store/products-slice/thunks';
 import { discountIncreaser, discountDecreaser } from '../../util/util';
 import BasketSummary from './basket-summary';
@@ -7,48 +12,60 @@ import { withStore } from '../../util/mock-component';
 import {
   extractActionsTypes,
   getMockProduct,
+  getMockProductsState,
   getMockStore,
 } from '../../util/mocks';
 import userEvent from '@testing-library/user-event';
 
 describe('Component: BasketSummary', () => {
-  it('shold renders correctly', () => {
+  it('should renders correctly', () => {
     const product = getMockProduct();
     const productPrice = `${product.price.toLocaleString('ru')} ₽`;
-    const mockStore = getMockStore();
-    mockStore[NameSpace.Products].allProducts = [product];
-    mockStore[NameSpace.Products].basket = [product.id];
+    const productsState = getMockProductsState({
+      allProducts: [product],
+      basket: [product.id],
+    });
+    const mockStore = getMockStore({ [NameSpace.Products]: productsState });
     const { withStoreComponent } = withStore(<BasketSummary />, mockStore);
+    const totalPriceElementTestId = 'total';
+    const discountElementTestId = 'discount';
+    const toBePaidElementTestId = 'paid';
+    const totalText = /Всего:/i;
+    const discountText = /Скидка:/i;
+    const toPayText = /К оплате:/i;
+    const expectedDiscountElementTextContent = '0 ₽';
+    const placeOrderButtonText = /Оформить заказ/i;
+    const applyPromoText =
+      /Если у вас есть промокод на скидку, примените его в этом поле/i;
+    const promoText = 'Промокод';
+    const enterPromoText = /Введите промокод/i;
+    const applyButtonText = 'Применить';
 
     render(withStoreComponent);
 
-    const totaPriceElement = screen.getByTestId('total');
-    const discountElement = screen.getByTestId('discount');
-    const toBePaidElement = screen.getByTestId('paid');
-    expect(screen.getByText(/Всего:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Скидка:/i)).toBeInTheDocument();
-    expect(screen.getByText(/К оплате:/i)).toBeInTheDocument();
-    expect(totaPriceElement.textContent).toBe(productPrice);
-    expect(discountElement.textContent).toBe('0 ₽');
+    const totalPriceElement = screen.getByTestId(totalPriceElementTestId);
+    const discountElement = screen.getByTestId(discountElementTestId);
+    const toBePaidElement = screen.getByTestId(toBePaidElementTestId);
+    expect(screen.getByText(totalText)).toBeInTheDocument();
+    expect(screen.getByText(discountText)).toBeInTheDocument();
+    expect(screen.getByText(toPayText)).toBeInTheDocument();
+    expect(totalPriceElement.textContent).toBe(productPrice);
+    expect(discountElement.textContent).toBe(
+      expectedDiscountElementTextContent
+    );
     expect(toBePaidElement.textContent).toBe(productPrice);
     expect(
-      screen.getByRole('button', { name: /Оформить заказ/i })
+      screen.getByRole(ElementRole.Button, { name: placeOrderButtonText })
     ).toBeInTheDocument();
+    expect(screen.getByText(applyPromoText)).toBeInTheDocument();
+    expect(screen.getByText(promoText)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(enterPromoText)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /Если у вас есть промокод на скидку, примените его в этом поле/i
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByText('Промокод')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(/Введите промокод/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Применить' })
+      screen.getByRole(ElementRole.Button, { name: applyButtonText })
     ).toBeInTheDocument();
   });
 
-  it('renders discount and total correctly', () => {
+  it('should renders discount and total correctly', () => {
     const product = getMockProduct();
     const productsInBasket = 3;
     const allProuductsPrice = product.price * productsInBasket;
@@ -57,30 +74,38 @@ describe('Component: BasketSummary', () => {
     discountPercent = discountDecreaser(allProuductsPrice, discountPercent);
     const discount = (allProuductsPrice * discountPercent) / 100;
     const total = allProuductsPrice - discount;
-    const mockStore = getMockStore();
-    mockStore[NameSpace.Products].allProducts = [product];
-    mockStore[NameSpace.Products].basket = Array.from(
-      { length: productsInBasket },
-      () => product.id
-    );
+    const productsState = getMockProductsState({
+      allProducts: [product],
+      basket: Array.from({ length: productsInBasket }, () => product.id),
+    });
+    const mockStore = getMockStore({ [NameSpace.Products]: productsState });
     const { withStoreComponent } = withStore(<BasketSummary />, mockStore);
+    const totalPriceElementTestId = 'total';
+    const discountElementTestId = 'discount';
+    const toBePaidElementTestId = 'paid';
+    const expectedTotalPriceTextContent = `${allProuductsPrice.toLocaleString(
+      'ru'
+    )} ₽`;
+    const expectedDiscountElementTextContent = `${discount.toLocaleString(
+      'ru'
+    )} ₽`;
+    const expectedDiscountElementClass = 'basket__summary-value--bonus';
+    const expectedToBePaidTextContent = `${total.toLocaleString('ru')} ₽`;
 
     render(withStoreComponent);
 
-    const totaPriceElement = screen.getByTestId('total');
-    const discountElement = screen.getByTestId('discount');
-    const toBePaidElement = screen.getByTestId('paid');
-    expect(totaPriceElement.textContent).toBe(
-      `${allProuductsPrice.toLocaleString('ru')} ₽`
-    );
+    const totaPriceElement = screen.getByTestId(totalPriceElementTestId);
+    const discountElement = screen.getByTestId(discountElementTestId);
+    const toBePaidElement = screen.getByTestId(toBePaidElementTestId);
+    expect(totaPriceElement.textContent).toBe(expectedTotalPriceTextContent);
     expect(discountElement.textContent).toBe(
-      `${discount.toLocaleString('ru')} ₽`
+      expectedDiscountElementTextContent
     );
-    expect(discountElement).toHaveClass('basket__summary-value--bonus');
-    expect(toBePaidElement.textContent).toBe(`${total.toLocaleString('ru')} ₽`);
+    expect(discountElement).toHaveClass(expectedDiscountElementClass);
+    expect(toBePaidElement.textContent).toBe(expectedToBePaidTextContent);
   });
 
-  it('shold dispatches postOrder on button click', async () => {
+  it('should dispatches postOrder on button click', async () => {
     const product = getMockProduct();
     const fakeStore = getMockStore();
     fakeStore[NameSpace.Products].basket = [product.id];
@@ -89,34 +114,41 @@ describe('Component: BasketSummary', () => {
       fakeStore
     );
     mockAxiosAdapter.onPost(Endpoint.Orders).reply(200, []);
+    const placeOrderButtonText = /Оформить заказ/i;
 
     render(withStoreComponent);
+
     await userEvent.click(
-      screen.getByRole('button', { name: /Оформить заказ/i })
+      screen.getByRole(ElementRole.Button, { name: placeOrderButtonText })
     );
     const actions = extractActionsTypes(mockStore.getActions());
-
     expect(actions).toEqual([postOrder.pending.type, postOrder.fulfilled.type]);
   });
 
-  it('shold button is disabled if basket is empty', () => {
+  it('should button is disabled if basket is empty', () => {
     const mockStore = getMockStore();
     const { withStoreComponent } = withStore(<BasketSummary />, mockStore);
+    const placeOrderButtonText = /Оформить заказ/i;
 
     render(withStoreComponent);
 
-    const orderButton = screen.getByRole('button', { name: /Оформить заказ/i });
+    const orderButton = screen.getByRole(ElementRole.Button, {
+      name: placeOrderButtonText,
+    });
     expect(orderButton).toBeDisabled();
   });
 
-  it('shold button is disabled when order is posting', () => {
+  it('should button is disabled when order is posting', () => {
     const mockStore = getMockStore();
     mockStore[NameSpace.Products].postOrderStatus = RequestStatus.Loading;
     const { withStoreComponent } = withStore(<BasketSummary />, mockStore);
+    const placeOrderButtonText = /Оформить заказ/i;
 
     render(withStoreComponent);
 
-    const orderButton = screen.getByRole('button', { name: /Оформить заказ/i });
+    const orderButton = screen.getByRole(ElementRole.Button, {
+      name: placeOrderButtonText,
+    });
     expect(orderButton).toBeDisabled();
   });
 });
