@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { AppRoute, Crumb } from '../../const/const';
+import { AppRoute, Crumb, ElementAttribute } from '../../const/const';
 import Breadcrumbs from './breadcrumbs';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { withHistory } from '../../util/mock-component';
@@ -41,18 +41,28 @@ describe('Component: Breadcrumbs', () => {
     expect(mainLinkElement).toBeInTheDocument();
     expect(catalogLinkElement).toBeInTheDocument();
     expect(tipElement).toBeInTheDocument();
-    expect(mainLinkElement).toHaveAttribute('href', AppRoute.Main);
-    expect(catalogLinkElement).toHaveAttribute('href', AppRoute.Catalog);
-    expect(tipElement).not.toHaveAttribute('href');
+    expect(mainLinkElement).toHaveAttribute(
+      ElementAttribute.Href,
+      AppRoute.Main
+    );
+    expect(catalogLinkElement).toHaveAttribute(
+      ElementAttribute.Href,
+      AppRoute.Catalog
+    );
+    expect(tipElement).not.toHaveAttribute(ElementAttribute.Href);
   });
 
   it('should does not render extraneous crumbs if they are not in Crumb', () => {
     const withHistoryComponent = withHistory(<Breadcrumbs />, mockHistory);
-    mockHistory.push('/unknown/route');
+    const unknownRoute = '/unknown/route';
+    const crumbTextForUnknownRoute = /Unknown/i;
+    mockHistory.push(unknownRoute);
 
     render(withHistoryComponent);
 
     expect(screen.getByText(Crumb.Main)).toBeInTheDocument();
-    expect(screen.queryByText(/Unknown/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(crumbTextForUnknownRoute)
+    ).not.toBeInTheDocument();
   });
 });
