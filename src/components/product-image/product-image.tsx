@@ -22,7 +22,7 @@ function ProductImage({ image, size }: ProductImageProps): JSX.Element {
     image;
 
   return (
-    <picture>
+    <picture data-testid="picture">
       <source
         type="image/webp"
         srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
@@ -34,6 +34,7 @@ function ProductImage({ image, size }: ProductImageProps): JSX.Element {
         width={size?.width ?? DefaultImageSize.Width}
         height={size?.height ?? DefaultImageSize.Height}
         alt={name}
+        data-testid="image"
       />
     </picture>
   );

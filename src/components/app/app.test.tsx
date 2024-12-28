@@ -1,7 +1,11 @@
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { withHistory, withStore } from '../../util/mock-component';
 import App from './app';
-import { getMockProduct, getMockStore } from '../../util/mocks';
+import {
+  getMockProduct,
+  getMockProductsState,
+  getMockStore,
+} from '../../util/mocks';
 import { render, screen } from '@testing-library/react';
 import { AppRoute, NameSpace, RequestStatus } from '../../const/const';
 
@@ -17,11 +21,14 @@ describe('Application Routing', () => {
   });
 
   it('should render "CatalogPage" when user navigate to "/"', () => {
+    const productsState = getMockProductsState({
+      allProductsStatus: RequestStatus.Success,
+    });
+    const mockStore = getMockStore({
+      [NameSpace.Products]: productsState,
+    });
     const withHistoryComponent = withHistory(<App />, mockHistory);
-    const { withStoreComponent } = withStore(
-      withHistoryComponent,
-      getMockStore()
-    );
+    const { withStoreComponent } = withStore(withHistoryComponent, mockStore);
     mockHistory.push(AppRoute.Main);
 
     render(withStoreComponent);
@@ -32,11 +39,14 @@ describe('Application Routing', () => {
   });
 
   it('should render "CatalogPage" when user navigate to "/catalog"', () => {
+    const productsState = getMockProductsState({
+      allProductsStatus: RequestStatus.Success,
+    });
+    const mockStore = getMockStore({
+      [NameSpace.Products]: productsState,
+    });
     const withHistoryComponent = withHistory(<App />, mockHistory);
-    const { withStoreComponent } = withStore(
-      withHistoryComponent,
-      getMockStore()
-    );
+    const { withStoreComponent } = withStore(withHistoryComponent, mockStore);
     mockHistory.push(AppRoute.Main);
 
     render(withStoreComponent);

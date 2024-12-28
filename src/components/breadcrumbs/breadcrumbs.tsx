@@ -41,7 +41,10 @@ function Breadcrumbs({ tip }: BreadcrumbsProps): JSX.Element {
             return (
               <li key={crumb} className="breadcrumbs__item">
                 {isLast ? (
-                  <span className="breadcrumbs__link breadcrumbs__link--active">
+                  <span
+                    className="breadcrumbs__link breadcrumbs__link--active"
+                    data-testid="breadcrumbs-tip"
+                  >
                     {tip ? tip : crumbName}
                   </span>
                 ) : (

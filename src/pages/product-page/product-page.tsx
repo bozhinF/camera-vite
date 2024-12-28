@@ -164,7 +164,9 @@ function ProductPage(): JSX.Element {
   });
 
   const handleBuyButtonClick = () => {
-    setModalOpen(true);
+    if (countProuductInBasket < 9) {
+      setModalOpen(true);
+    }
   };
 
   const handleModalClose = () => {
@@ -218,11 +220,7 @@ function ProductPage(): JSX.Element {
                   <button
                     className="btn btn--purple btn--purple-border"
                     type="button"
-                    onClick={() => {
-                      if (countProuductInBasket < 9) {
-                        handleBuyButtonClick();
-                      }
-                    }}
+                    onClick={handleBuyButtonClick}
                   >
                     <svg width={24} height={16} aria-hidden="true">
                       <use xlinkHref="#icon-add-basket" />
@@ -243,7 +241,12 @@ function ProductPage(): JSX.Element {
           </div>
         </div>
       </main>
-      <a className="up-btn" href="#header" onClick={handleUpButtonClick}>
+      <a
+        className="up-btn"
+        href="#header"
+        onClick={handleUpButtonClick}
+        data-testid="up-btn"
+      >
         <svg width="12" height="18" aria-hidden="true">
           <use xlinkHref="#icon-arrow2"></use>
         </svg>

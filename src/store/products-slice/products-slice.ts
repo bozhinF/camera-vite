@@ -9,7 +9,7 @@ import {
 } from './thunks';
 import { saveLocalBasket } from '../../services/basket';
 
-type ProductsState = {
+export type ProductsState = {
   allProductsStatus: RequestStatus;
   allProducts: Products;
   productDetailsStatus: RequestStatus;

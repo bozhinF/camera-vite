@@ -5,6 +5,7 @@ import ProductCard from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
   getAllProducts,
+  getAllProductsStatus,
   getBasket,
 } from '../../store/products-slice/selectors';
 import Portal from '../../components/portal/portal';
@@ -20,7 +21,7 @@ import Sort from '../../components/sort/sort';
 import Filter from '../../components/filter/filter';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { getFilterParams } from '../../store/filter-slice/selectors';
-import { FilterOption } from '../../const/const';
+import { FilterOption, RequestStatus } from '../../const/const';
 import {
   FilterState,
   initialState,
@@ -37,6 +38,8 @@ import {
 import Pagination from '../../components/pagination/pagination';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
+import Loader from '../../components/loader/loader';
+import FailedToLoad from '../failed-to-load-page/failed-to-load-page';
 
 const MAX_PRODUCTS_CARD_ON_PAGE = 9;
 
@@ -47,6 +50,7 @@ function CatalogPage(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const products = useAppSelector(getAllProducts);
+  const productsStatus = useAppSelector(getAllProductsStatus);
   const basket = useAppSelector(getBasket);
   const filterState = useAppSelector(getFilterParams);
 
@@ -229,6 +233,17 @@ function CatalogPage(): JSX.Element {
   const handleAddButtonClick = () => {
     setModalActive(false);
   };
+
+  if (
+    productsStatus === RequestStatus.Idle ||
+    productsStatus === RequestStatus.Loading
+  ) {
+    return <Loader />;
+  }
+
+  if (productsStatus === RequestStatus.Failed) {
+    return <FailedToLoad />;
+  }
 
   return (
     <main>

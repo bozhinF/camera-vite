@@ -32,7 +32,11 @@ function BasketPage(): JSX.Element {
   const status = useAppSelector(getPostOrderStatus);
 
   useEffect(() => {
-    if (status === RequestStatus.Loading) {
+    if (
+      status === RequestStatus.Loading ||
+      status === RequestStatus.Success ||
+      status === RequestStatus.Failed
+    ) {
       setModalOpen(true);
     }
     if (status === RequestStatus.Success) {

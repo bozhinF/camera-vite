@@ -6,6 +6,7 @@ import { Order, Product, Review } from '../types/types';
 import { commerce, datatype, helpers, image, lorem, name } from 'faker';
 import { FilterOption, NameSpace, RequestStatus } from '../const/const';
 import { FilterState } from '../store/filter-slice/filter-slice';
+import { ProductsState } from '../store/products-slice/products-slice';
 
 export type AppThunkDispatch = ThunkDispatch<
   State,
@@ -93,5 +94,19 @@ export const getMockFilterState = (
   level: [],
   page: null,
   tab: FilterOption.tab[0].value,
+  ...initial,
+});
+
+export const getMockProductsState = (
+  initial: Partial<ProductsState> = {}
+): ProductsState => ({
+  allProductsStatus: RequestStatus.Idle,
+  allProducts: [],
+  productDetailsStatus: RequestStatus.Idle,
+  productDetails: null,
+  productReviewsStatus: RequestStatus.Idle,
+  productReviews: [],
+  basket: [],
+  postOrderStatus: RequestStatus.Idle,
   ...initial,
 });

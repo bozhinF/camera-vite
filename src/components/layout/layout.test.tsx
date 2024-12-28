@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import Layout from './layout';
 import { withHistory, withStore } from '../../util/mock-component';
-import { AppRoute } from '../../const/const';
-import { getMockStore } from '../../util/mocks';
+import { AppRoute, NameSpace, RequestStatus } from '../../const/const';
+import { getMockProductsState, getMockStore } from '../../util/mocks';
 import { Route, Routes } from 'react-router-dom';
 import CatalogPage from '../../pages/catalog-page/catalog-page';
 
@@ -44,6 +44,12 @@ describe('Component: Layout', () => {
   });
 
   it('should renders Outlet component', () => {
+    const productsState = getMockProductsState({
+      allProductsStatus: RequestStatus.Success,
+    });
+    const mockStore = getMockStore({
+      [NameSpace.Products]: productsState,
+    });
     const withHistoryComponent = withHistory(
       <Routes>
         <Route path={AppRoute.Catalog} element={<Layout />}>
@@ -52,10 +58,7 @@ describe('Component: Layout', () => {
       </Routes>,
       mockHistory
     );
-    const { withStoreComponent } = withStore(
-      withHistoryComponent,
-      getMockStore()
-    );
+    const { withStoreComponent } = withStore(withHistoryComponent, mockStore);
     mockHistory.push(AppRoute.Catalog);
 
     render(withStoreComponent);
