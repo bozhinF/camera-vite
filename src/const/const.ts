@@ -80,6 +80,7 @@ export enum ElementRole {
   Button = 'button',
   Link = 'link',
   Image = 'img',
+  Heading = 'heading',
 }
 
 export enum ElementAttribute {
