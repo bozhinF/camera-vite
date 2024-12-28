@@ -8,13 +8,16 @@ import { createStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { addItemToBasket } from '../../store/products-slice/products-slice';
 import userEvent from '@testing-library/user-event';
+import { ElementRole, UserEventKey } from '../../const/const';
 
 describe('Component: AddItemModal', () => {
+  type MockStore = ReturnType<typeof getMockStore>;
+
   const mockAddItem = getMockProduct();
   const onCloseButtonClick = vi.fn();
   const onBuyButtonClick = vi.fn();
 
-  const createMockStore = (initialState: ReturnType<typeof getMockStore>) =>
+  const createMockStore = (initialState: MockStore) =>
     createStore(rootReducer, initialState);
 
   let store: ReturnType<typeof createMockStore>;
@@ -24,7 +27,7 @@ describe('Component: AddItemModal', () => {
     store = createMockStore(getMockStore());
   });
 
-  it('renders correctly with a product', () => {
+  it('should renders correctly with a product', () => {
     const title = /Добавить товар в корзину/i;
     const productName = mockAddItem.name;
     const buyButtonText = /Добавить в корзину/i;
@@ -43,14 +46,14 @@ describe('Component: AddItemModal', () => {
     expect(screen.getByText(title)).toBeInTheDocument();
     expect(screen.getByText(productName)).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: buyButtonText })
+      screen.getByRole(ElementRole.Button, { name: buyButtonText })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: closeButtonLabel })
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
     ).toBeInTheDocument();
   });
 
-  it('calls onCloseButtonClick when close button is clicked', () => {
+  it('should calls onCloseButtonClick when close button is clicked', () => {
     const closeButtonLabel = /Закрыть попап/i;
 
     render(
@@ -63,13 +66,17 @@ describe('Component: AddItemModal', () => {
       </Provider>
     );
 
-    fireEvent.click(screen.getByRole('button', { name: closeButtonLabel }));
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
+    );
     expect(onCloseButtonClick).toHaveBeenCalledTimes(1);
   });
 
-  it('dispatches addItemToBasket and calls onBuyButtonClick when buy button is clicked', () => {
+  it('should dispatches addItemToBasket and calls onBuyButtonClick when buy button is clicked', () => {
     const dispatchSpy = vi.spyOn(store, 'dispatch');
     const buyButtonText = /Добавить в корзину/i;
+    const expectedDispatchCalledTimes = 1;
+    const expectedOnBuyButtonClickCalledTimes = 1;
 
     render(
       <Provider store={store}>
@@ -81,16 +88,18 @@ describe('Component: AddItemModal', () => {
       </Provider>
     );
 
-    const buyButton = screen.getByRole('button', {
+    const buyButton = screen.getByRole(ElementRole.Button, {
       name: buyButtonText,
     });
     fireEvent.click(buyButton);
     expect(dispatchSpy).toHaveBeenCalledWith(addItemToBasket(mockAddItem.id));
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(onBuyButtonClick).toHaveBeenCalledTimes(1);
+    expect(dispatchSpy).toHaveBeenCalledTimes(expectedDispatchCalledTimes);
+    expect(onBuyButtonClick).toHaveBeenCalledTimes(
+      expectedOnBuyButtonClickCalledTimes
+    );
   });
 
-  it('handles keyboard navigation between buttons', async () => {
+  it('should handles keyboard navigation between buttons', async () => {
     const buyButtonText = /Добавить в корзину/i;
     const closeButtonLabel = /Закрыть попап/i;
 
@@ -104,21 +113,23 @@ describe('Component: AddItemModal', () => {
       </Provider>
     );
 
-    const closeButton = screen.getByRole('button', { name: closeButtonLabel });
-    const buyButton = screen.getByRole('button', {
+    const closeButton = screen.getByRole(ElementRole.Button, {
+      name: closeButtonLabel,
+    });
+    const buyButton = screen.getByRole(ElementRole.Button, {
       name: buyButtonText,
     });
 
     expect(document.activeElement).toBe(buyButton);
 
-    await userEvent.keyboard('{Tab}');
+    await userEvent.keyboard(UserEventKey.Tab);
     expect(document.activeElement).toBe(closeButton);
 
-    await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+    await userEvent.keyboard(UserEventKey.ShiftTab);
     expect(document.activeElement).toBe(buyButton);
   });
 
-  it('renders SomethingWrongModal when addItem is null', () => {
+  it('should renders SomethingWrongModal when addItem is null', () => {
     const somethingWrongModalText = /Что-то пошло не так/i;
     const mockHistory = createMemoryHistory();
     const withHistoryComponent = withHistory(

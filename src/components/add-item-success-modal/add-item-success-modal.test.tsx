@@ -1,10 +1,20 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { withHistory, withStore } from '../../util/mock-component';
-import { getMockProduct, getMockStore } from '../../util/mocks';
+import {
+  getMockProduct,
+  getMockProductsState,
+  getMockStore,
+} from '../../util/mocks';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
 import AddItemSuccessModal from './add-item-success-modal';
-import { AppRoute, NameSpace, RequestStatus } from '../../const/const';
+import {
+  AppRoute,
+  ElementRole,
+  NameSpace,
+  RequestStatus,
+  UserEventKey,
+} from '../../const/const';
 
 describe('Component: AddItemSuccessModal', () => {
   let mockHistory: MemoryHistory;
@@ -30,18 +40,19 @@ describe('Component: AddItemSuccessModal', () => {
 
     expect(screen.getByText(title)).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: continiueButtonText })
+      screen.getByRole(ElementRole.Link, { name: continiueButtonText })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: goToBasketButtonText })
+      screen.getByRole(ElementRole.Button, { name: goToBasketButtonText })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: closeButtonLabel })
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
     ).toBeInTheDocument();
   });
 
   it('should calls onCloseButtonClick when close button is clicked', () => {
     const closeButtonLabel = /Закрыть попап/i;
+    const expectOnCloseButtonClickCalledTimes = 1;
     const withHistoryComponent = withHistory(
       <AddItemSuccessModal onCloseButtonClick={onCloseButtonClick} />,
       mockHistory
@@ -50,8 +61,12 @@ describe('Component: AddItemSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    fireEvent.click(screen.getByRole('button', { name: closeButtonLabel }));
-    expect(onCloseButtonClick).toHaveBeenCalledTimes(1);
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
+    );
+    expect(onCloseButtonClick).toHaveBeenCalledTimes(
+      expectOnCloseButtonClickCalledTimes
+    );
   });
 
   it('should handles keyboard navigation between buttons', async () => {
@@ -66,23 +81,25 @@ describe('Component: AddItemSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    const continiueButton = screen.getByRole('link', {
+    const continiueButton = screen.getByRole(ElementRole.Link, {
       name: continiueButtonText,
     });
-    const closeButton = screen.getByRole('button', { name: closeButtonLabel });
-    const goToBasketButton = screen.getByRole('button', {
+    const closeButton = screen.getByRole(ElementRole.Button, {
+      name: closeButtonLabel,
+    });
+    const goToBasketButton = screen.getByRole(ElementRole.Button, {
       name: goToBasketButtonText,
     });
 
     expect(document.activeElement).toBe(goToBasketButton);
 
-    await userEvent.keyboard('{Tab}');
+    await userEvent.keyboard(UserEventKey.Tab);
     expect(document.activeElement).toBe(closeButton);
 
-    await userEvent.keyboard('{Tab}');
+    await userEvent.keyboard(UserEventKey.Tab);
     expect(document.activeElement).toBe(continiueButton);
 
-    await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+    await userEvent.keyboard(UserEventKey.ShiftTab);
     expect(document.activeElement).toBe(closeButton);
   });
 
@@ -90,9 +107,11 @@ describe('Component: AddItemSuccessModal', () => {
     const continiueButtonText = /Продолжить покупки/i;
     const product = getMockProduct();
     const id = product.id;
-    const mockStore = getMockStore();
-    mockStore[NameSpace.Products].productDetails = product;
-    mockStore[NameSpace.Products].productDetailsStatus = RequestStatus.Success;
+    const mockProductsState = getMockProductsState({
+      productDetails: product,
+      productDetailsStatus: RequestStatus.Success,
+    });
+    const mockStore = getMockStore({ [NameSpace.Products]: mockProductsState });
     const withHistoryComponent = withHistory(
       <AddItemSuccessModal onCloseButtonClick={onCloseButtonClick} />,
       mockHistory
@@ -102,7 +121,9 @@ describe('Component: AddItemSuccessModal', () => {
 
     render(withStoreComponent);
 
-    fireEvent.click(screen.getByRole('link', { name: continiueButtonText }));
+    fireEvent.click(
+      screen.getByRole(ElementRole.Link, { name: continiueButtonText })
+    );
     const { pathname } = mockHistory.location;
     expect(pathname).toBe(AppRoute.Catalog);
   });
@@ -117,7 +138,9 @@ describe('Component: AddItemSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    fireEvent.click(screen.getByRole('button', { name: goToBasketButtonText }));
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: goToBasketButtonText })
+    );
     const { pathname } = mockHistory.location;
     expect(pathname).toBe(AppRoute.Basket);
   });

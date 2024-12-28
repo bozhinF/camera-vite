@@ -75,3 +75,13 @@ export const FilterOption: FitlerOptions = {
     { id: 'description', title: 'Описание', value: 'description' },
   ],
 } as const;
+
+export enum ElementRole {
+  Button = 'button',
+  Link = 'link',
+}
+
+export enum UserEventKey {
+  Tab = '{Tab}',
+  ShiftTab = '{Shift>}{Tab}{/Shift}',
+}
