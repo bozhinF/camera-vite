@@ -79,6 +79,18 @@ export const FilterOption: FitlerOptions = {
 export enum ElementRole {
   Button = 'button',
   Link = 'link',
+  Image = 'img',
+}
+
+export enum ElementAttribute {
+  Src = 'src',
+  Width = 'width',
+  Height = 'height',
+  Href = 'href',
+}
+
+export enum ElementTag {
+  Div = 'div',
 }
 
 export enum UserEventKey {
