@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-function FailedToLoad(): JSX.Element {
+function FailedToLoadPage(): JSX.Element {
   return (
     <main
       style={{
@@ -22,4 +22,4 @@ function FailedToLoad(): JSX.Element {
   );
 }
 
-export default FailedToLoad;
+export default FailedToLoadPage;

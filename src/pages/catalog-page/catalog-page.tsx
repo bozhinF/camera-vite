@@ -39,7 +39,7 @@ import Pagination from '../../components/pagination/pagination';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 import Loader from '../../components/loader/loader';
-import FailedToLoad from '../failed-to-load-page/failed-to-load-page';
+import FailedToLoadPage from '../failed-to-load-page/failed-to-load-page';
 
 const MAX_PRODUCTS_CARD_ON_PAGE = 9;
 
@@ -242,7 +242,7 @@ function CatalogPage(): JSX.Element {
   }
 
   if (productsStatus === RequestStatus.Failed) {
-    return <FailedToLoad />;
+    return <FailedToLoadPage />;
   }
 
   return (
