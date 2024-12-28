@@ -87,6 +87,7 @@ export enum ElementAttribute {
   Width = 'width',
   Height = 'height',
   Href = 'href',
+  Type = 'type',
 }
 
 export enum ElementTag {

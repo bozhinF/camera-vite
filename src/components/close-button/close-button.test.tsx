@@ -1,46 +1,59 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import CloseButton from './close-button';
+import { ElementAttribute, ElementRole } from '../../const/const';
 
 describe('Component: CloseButton', () => {
   it('should renders with default class and type', () => {
+    const expectedButtonClass = 'cross-btn';
+    const expectedType = 'button';
+
     render(<CloseButton />);
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole(ElementRole.Button);
     expect(button).toBeInTheDocument();
-    expect(button).toHaveClass('cross-btn');
-    expect(button).toHaveAttribute('type', 'button');
+    expect(button).toHaveClass(expectedButtonClass);
+    expect(button).toHaveAttribute(ElementAttribute.Type, expectedType);
   });
 
   it('should renders with custom class and type', () => {
-    render(<CloseButton className="custom-class" type="submit" />);
+    const expectedButtonClass = 'custom-class';
+    const expectedType = 'submit';
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('custom-class');
-    expect(button).toHaveAttribute('type', 'submit');
+    render(<CloseButton className={expectedButtonClass} type={expectedType} />);
+
+    const button = screen.getByRole(ElementRole.Button);
+    expect(button).toHaveClass(expectedButtonClass);
+    expect(button).toHaveAttribute(ElementAttribute.Type, expectedType);
   });
 
   it('should renders with aria-label', () => {
-    render(<CloseButton label="Close the dialog" />);
+    const expectedButtonLabelText = 'Close the dialog';
 
-    const button = screen.getByLabelText('Close the dialog');
+    render(<CloseButton label={expectedButtonLabelText} />);
+
+    const button = screen.getByLabelText(expectedButtonLabelText);
     expect(button).toBeInTheDocument();
   });
 
   it('should renders with text', () => {
-    render(<CloseButton text="Close" />);
+    const expectedHiddenText = 'Close';
+    const expectedClass = 'visually-hidden';
 
-    const hiddenText = screen.getByText('Close');
+    render(<CloseButton text={expectedHiddenText} />);
+
+    const hiddenText = screen.getByText(expectedHiddenText);
     expect(hiddenText).toBeInTheDocument();
-    expect(hiddenText).toHaveClass('visually-hidden');
+    expect(hiddenText).toHaveClass(expectedClass);
   });
 
   it('should calls onClick handler when clicked', () => {
     const handleClick = vi.fn();
+    const expectedHandleClickCalledTimes = 1;
+
     render(<CloseButton onClick={handleClick} />);
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole(ElementRole.Button);
     fireEvent.click(button);
-
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    expect(handleClick).toHaveBeenCalledTimes(expectedHandleClickCalledTimes);
   });
 });
