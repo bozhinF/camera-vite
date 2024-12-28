@@ -26,7 +26,7 @@ export enum NameSpace {
 }
 
 export enum Endpoint {
-  Products = '/camerass',
+  Products = '/cameras',
   Comments = '/cameras/:cameraId/reviews',
   Orders = '/orders',
 }
