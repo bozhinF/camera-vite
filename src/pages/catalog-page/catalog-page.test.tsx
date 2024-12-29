@@ -13,6 +13,7 @@ import {
 import {
   AppRoute,
   Crumb,
+  ElementRole,
   FilterOption,
   NameSpace,
   RequestStatus,
@@ -33,6 +34,7 @@ describe('Component: CatalogPage', () => {
   });
 
   it('should renders banner', () => {
+    const expectedBannerText = /баннер/i;
     const mockProductsState = getMockProductsState({
       allProductsStatus: RequestStatus.Success,
     });
@@ -43,11 +45,14 @@ describe('Component: CatalogPage', () => {
 
     render(withStoreComponent);
 
-    const imgElement = screen.getByRole('img', { name: /баннер/i });
+    const imgElement = screen.getByRole(ElementRole.Image, {
+      name: expectedBannerText,
+    });
     expect(imgElement).toBeInTheDocument();
   });
 
   it('should renders breadcrumbs', () => {
+    const breadcrumbsTipTestId = 'breadcrumbs-tip';
     const mockProductsState = getMockProductsState({
       allProductsStatus: RequestStatus.Success,
     });
@@ -58,9 +63,11 @@ describe('Component: CatalogPage', () => {
 
     render(withStoreComponent);
 
-    expect(screen.getByRole('link', { name: Crumb.Main })).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumbs-tip')).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumbs-tip').textContent).toBe(
+    expect(
+      screen.getByRole(ElementRole.Link, { name: Crumb.Main })
+    ).toBeInTheDocument();
+    expect(screen.getByTestId(breadcrumbsTipTestId)).toBeInTheDocument();
+    expect(screen.getByTestId(breadcrumbsTipTestId).textContent).toBe(
       Crumb.Catalog
     );
   });
@@ -78,7 +85,7 @@ describe('Component: CatalogPage', () => {
     render(withStoreComponent);
 
     expect(
-      screen.getByRole('heading', { name: expectedHeading })
+      screen.getByRole(ElementRole.Heading, { name: expectedHeading })
     ).toBeInTheDocument();
   });
 
@@ -98,7 +105,6 @@ describe('Component: CatalogPage', () => {
     Object.values(FilterOption.sort).forEach((option) => {
       expect(screen.getByLabelText(option.title)).toBeInTheDocument();
     });
-
     Object.values(FilterOption.order).forEach((option) => {
       expect(screen.getByLabelText(option.title)).toBeInTheDocument();
     });
@@ -122,19 +128,20 @@ describe('Component: CatalogPage', () => {
     render(withStoreComponent);
 
     expect(
-      screen.getByRole('heading', { name: expectedFilterHeading })
+      screen.getByRole(ElementRole.Heading, { name: expectedFilterHeading })
     ).toBeInTheDocument();
     expect(screen.getByText(expectedPriceInputTitle)).toBeInTheDocument();
     expect(screen.getByText(expectedCategoryTitle)).toBeInTheDocument();
     expect(screen.getByText(expectedTypeTitle)).toBeInTheDocument();
     expect(screen.getByText(expectedLevelTitle)).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: expectedResetButtonText })
+      screen.getByRole(ElementRole.Button, { name: expectedResetButtonText })
     ).toBeInTheDocument();
   });
 
   it('should render products cards', () => {
-    const mockProducts = Array.from({ length: 5 }, (_, i) =>
+    const productsCount = 5;
+    const mockProducts = Array.from({ length: productsCount }, (_, i) =>
       getMockProduct({ id: i + 1, name: `Product ${i + 1}` })
     );
     const productsState = getMockProductsState({
@@ -156,9 +163,11 @@ describe('Component: CatalogPage', () => {
   });
 
   it('should render pagination', () => {
+    const anyNymber = /\d+/;
     const expectedPaginationLinks = 3;
     const expectedNextLinkText = 'Далее';
-    const mockProducts = Array.from({ length: 100 }, (_, i) =>
+    const productsCount = 100;
+    const mockProducts = Array.from({ length: productsCount }, (_, i) =>
       getMockProduct({ id: i + 1, name: `Product ${i + 1}` })
     );
     const productsState = getMockProductsState({
@@ -174,7 +183,9 @@ describe('Component: CatalogPage', () => {
 
     render(withStoreComponent);
 
-    const pageLinks = screen.getAllByRole('link', { name: /\d+/ });
+    const pageLinks = screen.getAllByRole(ElementRole.Link, {
+      name: anyNymber,
+    });
     expect(pageLinks).toHaveLength(expectedPaginationLinks);
     const nextLink = screen.getByText(expectedNextLinkText);
     expect(nextLink).toBeInTheDocument();
@@ -217,6 +228,7 @@ describe('Component: CatalogPage', () => {
   it('should dispatch setFilters when specified search parameters', () => {
     const searchParams =
       '?sort=popular&order=down&category=photocamera&type=digital&type=collection&level=professional';
+    const expectedDispatchSpyCalledTimes = 1;
     const mockState = getMockStore({
       [NameSpace.Products]: getMockProductsState({
         allProductsStatus: RequestStatus.Success,
@@ -248,12 +260,16 @@ describe('Component: CatalogPage', () => {
     render(withStoreComponent);
 
     expect(dispatchSpy).toBeCalled();
-    expect(dispatchSpy).toBeCalledTimes(1);
+    expect(dispatchSpy).toBeCalledTimes(expectedDispatchSpyCalledTimes);
     expect(dispatchSpy).toBeCalledWith(setFilters(expectedState));
   });
 
   it('should dispatch setFilters when a page number is specified in the search parameters', () => {
-    const mockProducts = Array.from({ length: 100 }, getMockProduct);
+    const mockProductsCount = 100;
+    const mockProducts = Array.from(
+      { length: mockProductsCount },
+      getMockProduct
+    );
     const searchParams = '?page=2';
     const mockState = getMockStore({
       [NameSpace.Products]: getMockProductsState({
@@ -284,7 +300,11 @@ describe('Component: CatalogPage', () => {
   });
 
   it('should dispatch setFilters when a product price specified in the search parameters', () => {
-    const mockProducts = Array.from({ length: 100 }, getMockProduct);
+    const mockProductsCount = 100;
+    const mockProducts = Array.from(
+      { length: mockProductsCount },
+      getMockProduct
+    );
     const minPrice = Math.min(...mockProducts.map((product) => product.price));
     const maxPrice = Math.max(...mockProducts.map((product) => product.price));
     const searchParams = `?price=${minPrice}&priceUp=${maxPrice}`;
