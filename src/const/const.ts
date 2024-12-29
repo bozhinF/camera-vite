@@ -81,6 +81,9 @@ export enum ElementRole {
   Link = 'link',
   Image = 'img',
   Heading = 'heading',
+  Banner = 'banner',
+  Contentinfo = 'contentinfo',
+  Main = 'main',
 }
 
 export enum ElementAttribute {

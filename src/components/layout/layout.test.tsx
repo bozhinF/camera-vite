@@ -2,7 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import Layout from './layout';
 import { withHistory, withStore } from '../../util/mock-component';
-import { AppRoute, NameSpace, RequestStatus } from '../../const/const';
+import {
+  AppRoute,
+  ElementRole,
+  NameSpace,
+  RequestStatus,
+} from '../../const/const';
 import { getMockProductsState, getMockStore } from '../../util/mocks';
 import { Route, Routes } from 'react-router-dom';
 import CatalogPage from '../../pages/catalog-page/catalog-page';
@@ -25,7 +30,7 @@ describe('Component: Layout', () => {
 
     render(withStoreComponent);
 
-    const headerElement = screen.getByRole('banner');
+    const headerElement = screen.getByRole(ElementRole.Banner);
     expect(headerElement).toBeInTheDocument();
   });
 
@@ -39,7 +44,7 @@ describe('Component: Layout', () => {
 
     render(withStoreComponent);
 
-    const footerElement = screen.getByRole('contentinfo');
+    const footerElement = screen.getByRole(ElementRole.Contentinfo);
     expect(footerElement).toBeInTheDocument();
   });
 
@@ -63,7 +68,7 @@ describe('Component: Layout', () => {
 
     render(withStoreComponent);
 
-    const outletElement = screen.getByRole('main');
+    const outletElement = screen.getByRole(ElementRole.Main);
     expect(outletElement).toBeInTheDocument();
   });
 });
