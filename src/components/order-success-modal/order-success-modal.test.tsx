@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { withHistory } from '../../util/mock-component';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
-import { AppRoute } from '../../const/const';
+import { AppRoute, ElementRole, UserEventKey } from '../../const/const';
 import OrderSuccessModal from './order-success-modal';
 
 describe('Component: OrderSuccessModal', () => {
@@ -28,15 +28,16 @@ describe('Component: OrderSuccessModal', () => {
 
     expect(screen.getByText(title)).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: continiueButtonText })
+      screen.getByRole(ElementRole.Button, { name: continiueButtonText })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: closeButtonLabel })
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
     ).toBeInTheDocument();
   });
 
   it('should calls onCloseButtonClick when close button is clicked', () => {
     const closeButtonLabel = /Закрыть попап/i;
+    const expectedOnCloseButtonClickCalledTimes = 1;
     const withHistoryComponent = withHistory(
       <OrderSuccessModal onCloseButtonClick={onCloseButtonClick} />,
       mockHistory
@@ -45,8 +46,12 @@ describe('Component: OrderSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    fireEvent.click(screen.getByRole('button', { name: closeButtonLabel }));
-    expect(onCloseButtonClick).toHaveBeenCalledTimes(1);
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
+    );
+    expect(onCloseButtonClick).toHaveBeenCalledTimes(
+      expectedOnCloseButtonClickCalledTimes
+    );
   });
 
   it('should handles keyboard navigation between buttons', async () => {
@@ -60,20 +65,18 @@ describe('Component: OrderSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    const continiueButton = screen.getByRole('button', {
+    const continiueButton = screen.getByRole(ElementRole.Button, {
       name: continiueButtonText,
     });
-    const closeButton = screen.getByRole('button', { name: closeButtonLabel });
-
+    const closeButton = screen.getByRole(ElementRole.Button, {
+      name: closeButtonLabel,
+    });
     expect(continiueButton).toBeInTheDocument();
     expect(closeButton).toBeInTheDocument();
-
     expect(document.activeElement).toBe(continiueButton);
-
-    await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+    await userEvent.keyboard(UserEventKey.ShiftTab);
     expect(document.activeElement).toBe(closeButton);
-
-    await userEvent.keyboard('{Tab}');
+    await userEvent.keyboard(UserEventKey.Tab);
     expect(document.activeElement).toBe(continiueButton);
   });
 
@@ -87,7 +90,9 @@ describe('Component: OrderSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    fireEvent.click(screen.getByRole('button', { name: continiueButtonText }));
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: continiueButtonText })
+    );
     const { pathname } = mockHistory.location;
     expect(pathname).toBe(AppRoute.Catalog);
   });
@@ -102,7 +107,9 @@ describe('Component: OrderSuccessModal', () => {
 
     render(withHistoryComponent);
 
-    fireEvent.click(screen.getByRole('button', { name: closeButtonLabel }));
+    fireEvent.click(
+      screen.getByRole(ElementRole.Button, { name: closeButtonLabel })
+    );
     const { pathname } = mockHistory.location;
     expect(pathname).toBe(AppRoute.Catalog);
   });
