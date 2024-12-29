@@ -4,9 +4,11 @@ import LoaderSpinner from './loader-spinner';
 
 describe('Component: LoaderSpinner', () => {
   it('should renders the loader spinner correctly', () => {
+    const expectedLoaderTestId = 'loader';
+
     render(<LoaderSpinner />);
 
-    const loader = screen.getByTestId('loader');
+    const loader = screen.getByTestId(expectedLoaderTestId);
     expect(loader).toBeInTheDocument();
     expect(loader).toHaveClass(css.loader);
   });
