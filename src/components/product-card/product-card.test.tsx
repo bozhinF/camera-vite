@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Product } from '../../types/types';
-import { AppRoute } from '../../const/const';
+import { AppRoute, ElementAttribute, ElementRole } from '../../const/const';
 import ProductCard from './product-card';
 import { getMockProduct } from '../../util/mocks';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -52,10 +52,10 @@ describe('Component: ProductCard', () => {
 
     render(withHistoryComponent);
 
-    const buyButton = screen.getByRole('button', { name: expectedButtonText });
-
+    const buyButton = screen.getByRole(ElementRole.Button, {
+      name: expectedButtonText,
+    });
     fireEvent.click(buyButton);
-
     expect(mockOnBuyButtonClick).toHaveBeenCalledWith(mockProduct);
   });
 
@@ -76,7 +76,7 @@ describe('Component: ProductCard', () => {
 
     expect(screen.getByText(expectedBasketButtonText)).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: expectedBuyButtonText })
+      screen.queryByRole(ElementRole.Button, { name: expectedBuyButtonText })
     ).toBeNull();
   });
 
@@ -96,9 +96,9 @@ describe('Component: ProductCard', () => {
 
     render(withHistoryComponent);
 
-    const detailsButton = screen.getByRole('link', {
+    const detailsButton = screen.getByRole(ElementRole.Link, {
       name: expectedDetailsLinkText,
     });
-    expect(detailsButton).toHaveAttribute('href', expectedRoute);
+    expect(detailsButton).toHaveAttribute(ElementAttribute.Href, expectedRoute);
   });
 });
