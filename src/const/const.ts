@@ -107,4 +107,5 @@ export enum EventKey {
   Enter = 'Enter',
   ArrowDown = 'ArrowDown',
   ArrowUp = 'ArrowUp',
+  Escape = 'Escape',
 }
