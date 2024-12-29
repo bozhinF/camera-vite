@@ -95,6 +95,7 @@ export enum ElementAttribute {
   Height = 'height',
   Href = 'href',
   Type = 'type',
+  XlinkHref = 'xlink:href',
 }
 
 export enum ElementTag {
