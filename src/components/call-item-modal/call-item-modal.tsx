@@ -44,7 +44,7 @@ function CallItemModal({
     }
   }, [closeButtonRef]);
 
-  const onPhoneInputChange = (
+  const handlePhoneInputChange = (
     isValid: boolean,
     unmaskedPhone: string
   ): void => {
@@ -152,7 +152,7 @@ function CallItemModal({
       <PhoneInput
         autofocus
         isWarn={isInputWarn}
-        onPhoneInputChange={onPhoneInputChange}
+        onPhoneInputChange={handlePhoneInputChange}
         setFirstFocused={setFirstFocused}
       />
       <div className="modal__buttons">
