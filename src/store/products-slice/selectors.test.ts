@@ -11,9 +11,11 @@ import {
 } from './selectors';
 
 describe('ProductSlice selectors', () => {
-  const products = Array.from({ length: 5 }, () => getMockProduct());
+  const mockProducstCount = 5;
+  const reviewsCount = 5;
+  const products = Array.from({ length: mockProducstCount }, getMockProduct);
   const product = products[0];
-  const reviews = Array.from({ length: 5 }, () => getMockReview());
+  const reviews = Array.from({ length: reviewsCount }, getMockReview);
   const basket = products.map((item) => item.id);
   const state = {
     [NameSpace.Products]: {
@@ -27,6 +29,7 @@ describe('ProductSlice selectors', () => {
       postOrderStatus: RequestStatus.Idle,
     },
   };
+
   it('should return allProducts', () => {
     const result = getAllProducts(state);
     expect(result).toEqual(products);
