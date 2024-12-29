@@ -2,23 +2,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Pagination from './pagination';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { withHistory, withStore } from '../../util/mock-component';
-import { getMockStore } from '../../util/mocks';
-import { AppRoute, FilterOption } from '../../const/const';
+import { getMockFilterState, getMockStore } from '../../util/mocks';
+import { AppRoute, ElementRole } from '../../const/const';
 
 describe('Component: Pagination', () => {
   let mockHistory: MemoryHistory;
   const mockOnChange = vi.fn();
-  const initialState = {
-    sort: FilterOption.sort[0].value,
-    order: FilterOption.order[0].value,
-    price: null,
-    priceUp: null,
-    category: '',
-    type: [],
-    level: [],
-    page: null,
-    tab: FilterOption.tab[0].value,
-  };
+  const initialState = getMockFilterState();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,10 +16,14 @@ describe('Component: Pagination', () => {
   });
 
   it('should renders correct number of page links', () => {
+    const currentPage = 2;
+    const countPages = 5;
+    const anyNumber = /\d+/;
+    const expectedPageLinksCount = 3;
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={2}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -43,15 +37,20 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const pageLinks = screen.getAllByRole('link', { name: /\d+/ });
-    expect(pageLinks).toHaveLength(3);
+    const pageLinks = screen.getAllByRole(ElementRole.Link, {
+      name: anyNumber,
+    });
+    expect(pageLinks).toHaveLength(expectedPageLinksCount);
   });
 
   it('should renders "Назад" link when necessary', () => {
+    const currentPage = 4;
+    const countPages = 10;
+    const expectedBackLinkText = 'Назад';
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={4}
-        countPages={10}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -65,15 +64,18 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const backLink = screen.getByText('Назад');
+    const backLink = screen.getByText(expectedBackLinkText);
     expect(backLink).toBeInTheDocument();
   });
 
   it('should does not render "Назад" link when not necessary', () => {
+    const currentPage = 1;
+    const countPages = 5;
+    const notExpectedBackLinkText = 'Назад';
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={1}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -87,15 +89,18 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const backLink = screen.queryByText('Назад');
+    const backLink = screen.queryByText(notExpectedBackLinkText);
     expect(backLink).not.toBeInTheDocument();
   });
 
   it('should renders "Далее" link when necessary', () => {
+    const currentPage = 3;
+    const countPages = 5;
+    const expectedNextLinkText = 'Далее';
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={3}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -109,15 +114,18 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const nextLink = screen.getByText('Далее');
+    const nextLink = screen.getByText(expectedNextLinkText);
     expect(nextLink).toBeInTheDocument();
   });
 
   it('should does not render "Далее" link when not necessary', () => {
+    const currentPage = 5;
+    const countPages = 5;
+    const notExpectedNextLinkText = 'Далее';
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={5}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -131,15 +139,19 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const nextLink = screen.queryByText('Далее');
+    const nextLink = screen.queryByText(notExpectedNextLinkText);
     expect(nextLink).not.toBeInTheDocument();
   });
 
   it('should calls onChange with correct page number when a page link is clicked', () => {
+    const currentPage = 2;
+    const countPages = 5;
+    const clickedPageLinkText = '3';
+    const expectedMockOnChangeCalledWithUpdate = [{ key: 'page', value: 3 }];
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={2}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -153,20 +165,22 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const pageLink = screen.getByText('3');
+    const pageLink = screen.getByText(clickedPageLinkText);
     fireEvent.click(pageLink);
-
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining(initialState),
-      [{ key: 'page', value: 3 }]
+      expectedMockOnChangeCalledWithUpdate
     );
   });
 
   it('should does not call onChange when the current page is clicked', () => {
+    const currentPage = 2;
+    const countPages = 5;
+    const clickedPageLinkText = '2';
     const withHistoryComponent = withHistory(
       <Pagination
-        currentPage={2}
-        countPages={5}
+        currentPage={currentPage}
+        countPages={countPages}
         filterState={initialState}
         onChange={mockOnChange}
       />,
@@ -180,9 +194,8 @@ describe('Component: Pagination', () => {
 
     render(withStoreComponent);
 
-    const currentPageLink = screen.getByText('2');
+    const currentPageLink = screen.getByText(clickedPageLinkText);
     fireEvent.click(currentPageLink);
-
     expect(mockOnChange).not.toHaveBeenCalled();
   });
 });
