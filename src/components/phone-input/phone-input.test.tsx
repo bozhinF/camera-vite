@@ -1,6 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import PhoneInput from './phone-input';
 import { render, screen } from '@testing-library/react';
+import { ElementTag } from '../../const/const';
 
 describe('Component: PhoneInput', () => {
   const mockOnPhoneInputChange = vi.fn();
@@ -11,6 +12,8 @@ describe('Component: PhoneInput', () => {
   });
 
   it('should renders correctly with autofocus', () => {
+    const expectedPlaceholderText = 'Введите ваш номер';
+
     render(
       <PhoneInput
         autofocus
@@ -19,28 +22,43 @@ describe('Component: PhoneInput', () => {
       />
     );
 
-    const inputElement = screen.getByPlaceholderText('Введите ваш номер');
+    const inputElement = screen.getByPlaceholderText(expectedPlaceholderText);
     expect(inputElement).toHaveFocus();
   });
 
   it('should triggers onPhoneInputChange with valid input', async () => {
+    const expectedPlaceholderText = 'Введите ваш номер';
+    const isExpectedPhoneComplete = true;
+    const expectedPhoneNumber = '+79991234567';
+
     render(
       <PhoneInput isWarn={false} onPhoneInputChange={mockOnPhoneInputChange} />
     );
 
-    const inputElement: HTMLInputElement =
-      screen.getByPlaceholderText('Введите ваш номер');
-    await userEvent.type(inputElement, '+79991234567');
-    expect(mockOnPhoneInputChange).toHaveBeenCalledWith(true, '+79991234567');
+    const inputElement: HTMLInputElement = screen.getByPlaceholderText(
+      expectedPlaceholderText
+    );
+    await userEvent.type(inputElement, expectedPhoneNumber);
+    expect(mockOnPhoneInputChange).toHaveBeenCalledWith(
+      isExpectedPhoneComplete,
+      expectedPhoneNumber
+    );
   });
 
   it('should triggers onPhoneInputChange with invalid input', async () => {
+    const expectedPlaceholderText = 'Введите ваш номер';
+    const invalidInput = 'invalid input';
+    const isExpectedPhoneComplete = false;
+    const expectedPhoneNumber = '+79';
+
     render(<PhoneInput isWarn onPhoneInputChange={mockOnPhoneInputChange} />);
 
-    const inputElement = screen.getByPlaceholderText('Введите ваш номер');
-    await userEvent.type(inputElement, 'invalid input');
-
-    expect(mockOnPhoneInputChange).toHaveBeenCalledWith(false, '+79');
+    const inputElement = screen.getByPlaceholderText(expectedPlaceholderText);
+    await userEvent.type(inputElement, invalidInput);
+    expect(mockOnPhoneInputChange).toHaveBeenCalledWith(
+      isExpectedPhoneComplete,
+      expectedPhoneNumber
+    );
   });
 
   it('should sets element for first focus', () => {
@@ -59,9 +77,14 @@ describe('Component: PhoneInput', () => {
   });
 
   it('should displays error state when isWarn is true', () => {
+    const expectedPhoneText = 'Телефон';
+    const expectedClass = 'is-invalid';
+
     render(<PhoneInput isWarn onPhoneInputChange={mockOnPhoneInputChange} />);
 
-    const inputWrapper = screen.getByText('Телефон').closest('div');
-    expect(inputWrapper).toHaveClass('is-invalid');
+    const inputWrapper = screen
+      .getByText(expectedPhoneText)
+      .closest(ElementTag.Div);
+    expect(inputWrapper).toHaveClass(expectedClass);
   });
 });
