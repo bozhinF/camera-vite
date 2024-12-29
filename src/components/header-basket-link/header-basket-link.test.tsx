@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { AppRoute, NameSpace } from '../../const/const';
+import { AppRoute, ElementAttribute, NameSpace } from '../../const/const';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import HeaderBasketLink from './header-basket-link';
 import { withHistory, withStore } from '../../util/mock-component';
@@ -14,6 +14,7 @@ describe('Component: HeaderBasketLink', () => {
   });
 
   it('should renders basket link', () => {
+    const expectedBasketLinkTestId = 'basket-link';
     const withHistoryComponent = withHistory(<HeaderBasketLink />, mockHistory);
     const { withStoreComponent } = withStore(
       withHistoryComponent,
@@ -23,12 +24,13 @@ describe('Component: HeaderBasketLink', () => {
 
     render(withStoreComponent);
 
-    const basketLink = screen.getByTestId('basket-link');
+    const basketLink = screen.getByTestId(expectedBasketLinkTestId);
     expect(basketLink).toBeInTheDocument();
-    expect(basketLink).toHaveAttribute('href', AppRoute.Basket);
+    expect(basketLink).toHaveAttribute(ElementAttribute.Href, AppRoute.Basket);
   });
 
   it('should renders basket count when there are items', () => {
+    const expectedBasketProductsCountText = '3';
     const mockStore = getMockStore();
     mockStore[NameSpace.Products].basket = [1, 2, 2];
     const withHistoryComponent = withHistory(<HeaderBasketLink />, mockHistory);
@@ -37,11 +39,12 @@ describe('Component: HeaderBasketLink', () => {
 
     render(withStoreComponent);
 
-    const basketCount = screen.getByText('3');
+    const basketCount = screen.getByText(expectedBasketProductsCountText);
     expect(basketCount).toBeInTheDocument();
   });
 
   it('should does not render basket count when basket is empty', () => {
+    const anyNumber = /^\d+$/;
     const withHistoryComponent = withHistory(<HeaderBasketLink />, mockHistory);
     const { withStoreComponent } = withStore(
       withHistoryComponent,
@@ -51,7 +54,7 @@ describe('Component: HeaderBasketLink', () => {
 
     render(withStoreComponent);
 
-    const basketCount = screen.queryByText(/^\d+$/);
+    const basketCount = screen.queryByText(anyNumber);
     expect(basketCount).not.toBeInTheDocument();
   });
 });
