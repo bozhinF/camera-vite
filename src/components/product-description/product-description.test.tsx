@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { Product } from '../../types/types';
 import ProductDescription from './product-description';
 import { getMockProduct } from '../../util/mocks';
+import { ElementRole } from '../../const/const';
 
 describe('Component: ProductDescription', () => {
   const mockProduct: Product = getMockProduct();
@@ -16,11 +17,12 @@ describe('Component: ProductDescription', () => {
   });
 
   it('should renders vendor code', () => {
+    const expectedArticleElementText = /артикул:/i;
     const expectedProductVendorCode = mockProduct.vendorCode;
 
     render(<ProductDescription product={mockProduct} />);
 
-    const articleElement = screen.getByText(/артикул:/i);
+    const articleElement = screen.getByText(expectedArticleElementText);
     const numberElement = screen.getByText(expectedProductVendorCode);
     expect(articleElement).toBeInTheDocument();
     expect(numberElement).toBeInTheDocument();
@@ -35,8 +37,9 @@ describe('Component: ProductDescription', () => {
 
     render(<ProductDescription product={mockProduct} />);
 
-    const listItemElements = screen.getAllByRole('listitem');
-    expect(listItemElements[1]).toHaveTextContent(expectedText);
+    const listItemElements = screen.getAllByRole(ElementRole.Listitem);
+    const expectedListElement = listItemElements[1];
+    expect(expectedListElement).toHaveTextContent(expectedText);
   });
 
   it('should renders level', () => {
@@ -53,7 +56,7 @@ describe('Component: ProductDescription', () => {
 
     render(
       <ProductDescription product={mockProduct}>
-        <div>Детали продукта</div>
+        <div>{expectedText}</div>
       </ProductDescription>
     );
 

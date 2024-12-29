@@ -84,6 +84,7 @@ export enum ElementRole {
   Banner = 'banner',
   Contentinfo = 'contentinfo',
   Main = 'main',
+  Listitem = 'listitem',
 }
 
 export enum ElementAttribute {
