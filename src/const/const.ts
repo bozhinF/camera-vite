@@ -102,4 +102,6 @@ export enum UserEventKey {
 
 export enum EventKey {
   Enter = 'Enter',
+  ArrowDown = 'ArrowDown',
+  ArrowUp = 'ArrowUp',
 }

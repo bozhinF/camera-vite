@@ -120,10 +120,10 @@ describe('Component: FilterPrice', () => {
     const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
 
     fireEvent.change(fromInput, { target: { value: inputedFromValue } });
-    fireEvent.keyDown(fromInput, { key: EventKey.Enter, code: EventKey.Enter });
+    fireEvent.keyDown(fromInput, { key: EventKey.Enter });
 
     fireEvent.change(toInput, { target: { value: inputedToValue } });
-    fireEvent.keyDown(toInput, { key: EventKey.Enter, code: EventKey.Enter });
+    fireEvent.keyDown(toInput, { key: EventKey.Enter });
 
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(Object), [
       { key: expectFromKey, value: expectFromValue },
