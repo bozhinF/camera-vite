@@ -35,7 +35,11 @@ describe('Async actions', () => {
 
   describe('fetchAllProducts action', () => {
     it('should dispatch "fetchAllProducts.pending", "fetchAllProducts.fulfilled", when server response 200', async () => {
-      const mockProducts = Array.from({ length: 5 }, () => getMockProduct());
+      const mockProductsCount = 5;
+      const mockProducts = Array.from(
+        { length: mockProductsCount },
+        getMockProduct
+      );
       mockAxiosAdapter.onGet(Endpoint.Products).reply(200, mockProducts);
 
       await store.dispatch(fetchAllProducts());
