@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import HistoryRouter from './history-route';
+import { ElementRole } from '../../const/const';
 
 describe('Component: HistoryRouter', () => {
   let history: MemoryHistory;
@@ -10,20 +11,25 @@ describe('Component: HistoryRouter', () => {
   });
 
   it('should renders children correctly', () => {
+    const expectedTestChildText = 'Test Child';
+
     render(
       <HistoryRouter history={history}>
-        <div>Test Child</div>
+        <div>{expectedTestChildText}</div>
       </HistoryRouter>
     );
 
-    expect(screen.getByText(/Test Child/i)).toBeInTheDocument();
+    expect(screen.getByText(expectedTestChildText)).toBeInTheDocument();
   });
 
   it('should updates state on history change', () => {
+    const baseLocation = '/';
+    const newRouteLocation = '/new-route';
+    const goToNewRouteText = 'Go to new route';
     const TestComponent = () => (
       <div>
-        <button onClick={() => history.push('/new-route')}>
-          Go to new route
+        <button onClick={() => history.push(newRouteLocation)}>
+          {goToNewRouteText}
         </button>
       </div>
     );
@@ -34,10 +40,8 @@ describe('Component: HistoryRouter', () => {
       </HistoryRouter>
     );
 
-    expect(history.location.pathname).toBe('/');
-
-    screen.getByRole('button', { name: /Go to new route/i }).click();
-
-    expect(history.location.pathname).toBe('/new-route');
+    expect(history.location.pathname).toBe(baseLocation);
+    screen.getByRole(ElementRole.Button, { name: goToNewRouteText }).click();
+    expect(history.location.pathname).toBe(newRouteLocation);
   });
 });
