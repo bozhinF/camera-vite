@@ -18,21 +18,23 @@ const TestComponent = ({ eventName }: TestComponentProps) => {
 
 describe('useWindowListener', () => {
   it('shuld adds event listener on mount and removes it on unmount', () => {
-    const { unmount } = render(<TestComponent eventName="resize" />);
+    const dispatchingEvent = 'keydown';
+    const expectedMockListenerCalledTimes = 1;
+
+    const { unmount } = render(<TestComponent eventName={dispatchingEvent} />);
 
     act(() => {
-      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event(dispatchingEvent));
     });
 
     expect(vi.isMockFunction(mockListener)).toBe(true);
-    expect(mockListener).toHaveBeenCalledTimes(1);
+    expect(mockListener).toHaveBeenCalledTimes(expectedMockListenerCalledTimes);
 
     unmount();
 
     act(() => {
-      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event(dispatchingEvent));
     });
-
-    expect(mockListener).toHaveBeenCalledTimes(1);
+    expect(mockListener).toHaveBeenCalledTimes(expectedMockListenerCalledTimes);
   });
 });
