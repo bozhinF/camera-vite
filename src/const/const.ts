@@ -88,7 +88,9 @@ export enum ElementRole {
 }
 
 export enum ElementAttribute {
+  Alt = 'alt',
   Src = 'src',
+  SrcSet = 'srcSet',
   Width = 'width',
   Height = 'height',
   Href = 'href',

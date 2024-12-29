@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import ProductImage from './product-image';
+import { ElementAttribute, ElementRole } from '../../const/const';
 
 describe('Component: ProductImage', () => {
   const mockImage = {
@@ -11,18 +12,32 @@ describe('Component: ProductImage', () => {
   };
 
   it('should renders image with correct attributes', () => {
+    const sourceElementTestId = 'source';
+    const expectedImgElementSrc = `/${mockImage.previewImg}`;
+    const expectedImgElementSrcSet = `/${mockImage.previewImg2x} 2x`;
+    const expectedSourceElementType = 'image/webp';
+    const expectedSourceElementSrcSet = `/${mockImage.previewImgWebp}, /${mockImage.previewImgWebp2x} 2x`;
+
     render(<ProductImage image={mockImage} />);
 
-    const imgElement = screen.getByRole('img');
-    expect(imgElement).toHaveAttribute('src', '/image.jpg');
-    expect(imgElement).toHaveAttribute('srcSet', '/image@2x.jpg 2x');
-    expect(imgElement).toHaveAttribute('alt', mockImage.name);
-
-    const sourceElement = screen.getByTestId('source');
-    expect(sourceElement).toHaveAttribute('type', 'image/webp');
+    const imgElement = screen.getByRole(ElementRole.Image);
+    const sourceElement = screen.getByTestId(sourceElementTestId);
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.Src,
+      expectedImgElementSrc
+    );
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.SrcSet,
+      expectedImgElementSrcSet
+    );
+    expect(imgElement).toHaveAttribute(ElementAttribute.Alt, mockImage.name);
     expect(sourceElement).toHaveAttribute(
-      'srcSet',
-      '/image.webp, /image@2x.webp 2x'
+      ElementAttribute.Type,
+      expectedSourceElementType
+    );
+    expect(sourceElement).toHaveAttribute(
+      ElementAttribute.SrcSet,
+      expectedSourceElementSrcSet
     );
   });
 
@@ -31,16 +46,31 @@ describe('Component: ProductImage', () => {
 
     render(<ProductImage image={mockImage} size={customSize} />);
 
-    const imgElement = screen.getByRole('img');
-    expect(imgElement).toHaveAttribute('width', String(customSize.width));
-    expect(imgElement).toHaveAttribute('height', String(customSize.height));
+    const imgElement = screen.getByRole(ElementRole.Image);
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.Width,
+      String(customSize.width)
+    );
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.Height,
+      String(customSize.height)
+    );
   });
 
   it('should renders image with default size if no size prop is provided', () => {
+    const expectedDefaultWidthAttributeValue = '140';
+    const expectedDefaultHeightAttributeValue = '120';
+
     render(<ProductImage image={mockImage} />);
 
-    const imgElement = screen.getByRole('img');
-    expect(imgElement).toHaveAttribute('width', String(140));
-    expect(imgElement).toHaveAttribute('height', String(120));
+    const imgElement = screen.getByRole(ElementRole.Image);
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.Width,
+      expectedDefaultWidthAttributeValue
+    );
+    expect(imgElement).toHaveAttribute(
+      ElementAttribute.Height,
+      expectedDefaultHeightAttributeValue
+    );
   });
 });
