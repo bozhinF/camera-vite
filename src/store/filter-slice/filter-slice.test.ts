@@ -1,19 +1,10 @@
 import { FilterOption } from '../../const/const';
+import { getMockFilterState } from '../../util/mocks';
 import { filterSlice, setFilters } from './filter-slice';
 
 describe('FilterSlice', () => {
   const emptyAction = { type: '' };
-  const expectedState = {
-    sort: FilterOption.sort[0].value,
-    order: FilterOption.order[0].value,
-    price: null,
-    priceUp: null,
-    category: '',
-    type: [],
-    level: [],
-    page: null,
-    tab: FilterOption.tab[0].value,
-  };
+  const expectedState = getMockFilterState();
 
   it('should return initial state with empty action', () => {
     const result = filterSlice.reducer(expectedState, emptyAction);
