@@ -1,29 +1,24 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import FilterPrice from './filter-price';
-import { FilterState } from '../../store/filter-slice/filter-slice';
-import { FilterOption } from '../../const/const';
+import { EventKey } from '../../const/const';
+import { getMockFilterState } from '../../util/mocks';
 
 describe('Component: FilterPrice', () => {
   const mockOnChange = vi.fn();
   const allPrices = [100, 200, 300, 400, 500];
 
-  const initialFilterState: FilterState = {
-    sort: FilterOption.sort[0].value,
-    order: FilterOption.order[0].value,
-    price: null,
-    priceUp: null,
-    category: '',
-    type: [],
-    level: [],
-    page: null,
-    tab: FilterOption.tab[0].value,
-  };
+  const initialFilterState = getMockFilterState();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should renders component with initial values', () => {
+    const expectPriceText = /Цена, ₽/i;
+    const expectFromPlaceholderText = /100/i;
+    const expectToPlaceholderText = /500/i;
+    const expectInputsValue = null;
+
     render(
       <FilterPrice
         allPrices={allPrices}
@@ -32,15 +27,26 @@ describe('Component: FilterPrice', () => {
       />
     );
 
-    expect(screen.getByText(/Цена, ₽/i)).toBeInTheDocument();
-    const fromInput: HTMLInputElement = screen.getByPlaceholderText(/100/i);
-    const toInput = screen.getByPlaceholderText(/500/i);
+    expect(screen.getByText(expectPriceText)).toBeInTheDocument();
+    const fromInput: HTMLInputElement = screen.getByPlaceholderText(
+      expectFromPlaceholderText
+    );
+    const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
 
-    expect(fromInput).toHaveValue(null);
-    expect(toInput).toHaveValue(null);
+    expect(fromInput).toHaveValue(expectInputsValue);
+    expect(toInput).toHaveValue(expectInputsValue);
   });
 
   it('should calls onChange with correct values when price inputs are changed', () => {
+    const expectFromPlaceholderText = /100/i;
+    const expectToPlaceholderText = /500/i;
+    const inputedFromValue = '200';
+    const inputedToValue = '400';
+    const expectFromValue = 200;
+    const expectToValue = 400;
+    const expectFromKey = 'price';
+    const expectToKey = 'priceUp';
+
     render(
       <FilterPrice
         allPrices={allPrices}
@@ -49,19 +55,28 @@ describe('Component: FilterPrice', () => {
       />
     );
 
-    const fromInput = screen.getByPlaceholderText(/100/i);
-    const toInput = screen.getByPlaceholderText(/500/i);
-    fireEvent.change(fromInput, { target: { value: '200' } });
+    const fromInput = screen.getByPlaceholderText(expectFromPlaceholderText);
+    const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
+    fireEvent.change(fromInput, { target: { value: inputedFromValue } });
     fireEvent.blur(fromInput);
-    fireEvent.change(toInput, { target: { value: '400' } });
+    fireEvent.change(toInput, { target: { value: inputedToValue } });
     fireEvent.blur(toInput);
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(Object), [
-      { key: 'price', value: 200 },
-      { key: 'priceUp', value: 400 },
+      { key: expectFromKey, value: expectFromValue },
+      { key: expectToKey, value: expectToValue },
     ]);
   });
 
   it('should limits the prices to the range of allPrices', () => {
+    const expectFromPlaceholderText = /100/i;
+    const expectToPlaceholderText = /500/i;
+    const inputedFromValue = '50';
+    const inputedToValue = '600';
+    const expectFromValue = 100;
+    const expectToValue = 500;
+    const expectFromKey = 'price';
+    const expectToKey = 'priceUp';
+
     render(
       <FilterPrice
         allPrices={allPrices}
@@ -70,21 +85,29 @@ describe('Component: FilterPrice', () => {
       />
     );
 
-    const fromInput = screen.getByPlaceholderText(/100/i);
-    const toInput = screen.getByPlaceholderText(/500/i);
-
-    fireEvent.change(fromInput, { target: { value: '50' } });
+    const fromInput = screen.getByPlaceholderText(expectFromPlaceholderText);
+    const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
+    fireEvent.change(fromInput, { target: { value: inputedFromValue } });
     fireEvent.blur(fromInput);
-    fireEvent.change(toInput, { target: { value: '600' } });
+    fireEvent.change(toInput, { target: { value: inputedToValue } });
     fireEvent.blur(toInput);
 
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(Object), [
-      { key: 'price', value: 100 },
-      { key: 'priceUp', value: 500 },
+      { key: expectFromKey, value: expectFromValue },
+      { key: expectToKey, value: expectToValue },
     ]);
   });
 
   it('should handles Enter key for submitting values', () => {
+    const expectFromPlaceholderText = /100/i;
+    const expectToPlaceholderText = /500/i;
+    const inputedFromValue = '250';
+    const inputedToValue = '450';
+    const expectFromValue = 250;
+    const expectToValue = 450;
+    const expectFromKey = 'price';
+    const expectToKey = 'priceUp';
+
     render(
       <FilterPrice
         allPrices={allPrices}
@@ -93,22 +116,31 @@ describe('Component: FilterPrice', () => {
       />
     );
 
-    const fromInput = screen.getByPlaceholderText(/100/i);
-    const toInput = screen.getByPlaceholderText(/500/i);
+    const fromInput = screen.getByPlaceholderText(expectFromPlaceholderText);
+    const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
 
-    fireEvent.change(fromInput, { target: { value: '250' } });
-    fireEvent.keyDown(fromInput, { key: 'Enter', code: 'Enter' });
+    fireEvent.change(fromInput, { target: { value: inputedFromValue } });
+    fireEvent.keyDown(fromInput, { key: EventKey.Enter, code: EventKey.Enter });
 
-    fireEvent.change(toInput, { target: { value: '450' } });
-    fireEvent.keyDown(toInput, { key: 'Enter', code: 'Enter' });
+    fireEvent.change(toInput, { target: { value: inputedToValue } });
+    fireEvent.keyDown(toInput, { key: EventKey.Enter, code: EventKey.Enter });
 
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(Object), [
-      { key: 'price', value: 250 },
-      { key: 'priceUp', value: 450 },
+      { key: expectFromKey, value: expectFromValue },
+      { key: expectToKey, value: expectToValue },
     ]);
   });
 
   it('should handles input blur and sets correct price', () => {
+    const expectFromPlaceholderText = /100/i;
+    const expectToPlaceholderText = /500/i;
+    const inputedFromValue = '300';
+    const inputedToValue = '150';
+    const expectFromValue = 100;
+    const expectToValue = 150;
+    const expectFromKey = 'price';
+    const expectToKey = 'priceUp';
+
     render(
       <FilterPrice
         allPrices={allPrices}
@@ -117,18 +149,18 @@ describe('Component: FilterPrice', () => {
       />
     );
 
-    const fromInput = screen.getByPlaceholderText(/100/i);
-    const toInput = screen.getByPlaceholderText(/500/i);
+    const fromInput = screen.getByPlaceholderText(expectFromPlaceholderText);
+    const toInput = screen.getByPlaceholderText(expectToPlaceholderText);
 
-    fireEvent.change(fromInput, { target: { value: '300' } });
+    fireEvent.change(fromInput, { target: { value: inputedFromValue } });
     fireEvent.blur(fromInput);
 
-    fireEvent.change(toInput, { target: { value: '150' } });
+    fireEvent.change(toInput, { target: { value: inputedToValue } });
     fireEvent.blur(toInput);
 
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(Object), [
-      { key: 'price', value: 100 },
-      { key: 'priceUp', value: 150 },
+      { key: expectFromKey, value: expectFromValue },
+      { key: expectToKey, value: expectToValue },
     ]);
   });
 });

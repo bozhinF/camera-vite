@@ -99,3 +99,7 @@ export enum UserEventKey {
   Tab = '{Tab}',
   ShiftTab = '{Shift>}{Tab}{/Shift}',
 }
+
+export enum EventKey {
+  Enter = 'Enter',
+}
