@@ -1,5 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { AppRoute, NameSpace, RequestStatus } from '../../const/const';
+import {
+  AppRoute,
+  ElementRole,
+  NameSpace,
+  RequestStatus,
+} from '../../const/const';
 import BasketPage from './basket-page';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { withHistory, withStore } from '../../util/mock-component';
@@ -18,7 +23,9 @@ describe('Component: BasketPage', () => {
   });
 
   it('should renders BasketPage correctly', () => {
-    const mockProducts = Array.from({ length: 3 }, (_, i) =>
+    const expectedBasketHeading = /Корзина/;
+    const mockProductsCount = 3;
+    const mockProducts = Array.from({ length: mockProductsCount }, (_, i) =>
       getMockProduct({ id: i + 1, name: `Product ${i + 1}` })
     );
     const mockBasket = mockProducts.map((mockProduct) => mockProduct.id);
@@ -35,7 +42,7 @@ describe('Component: BasketPage', () => {
     render(withStoreComponent);
 
     expect(
-      screen.getByRole('heading', { name: /Корзина/ })
+      screen.getByRole(ElementRole.Heading, { name: expectedBasketHeading })
     ).toBeInTheDocument();
 
     mockProducts.forEach(({ name }) =>
@@ -44,6 +51,8 @@ describe('Component: BasketPage', () => {
   });
 
   it('should opens remove item modal when close button is clicked', () => {
+    const expectedRemoveButtonText = /удалить товар/i;
+    const expectedRemoveItemModalText = /удалить этот товар?/i;
     const mockProduct = getMockProduct({ id: 1, name: 'Product 1' });
     const mockBasket = [1];
     const mockProductsState = getMockProductsState({
@@ -58,14 +67,15 @@ describe('Component: BasketPage', () => {
 
     render(withStoreComponent);
 
-    const closeButton = screen.getAllByRole('button', {
-      name: /удалить товар/i,
+    const closeButton = screen.getAllByRole(ElementRole.Button, {
+      name: expectedRemoveButtonText,
     })[0];
     fireEvent.click(closeButton);
-    expect(screen.getByText(/удалить этот товар?/i)).toBeInTheDocument();
+    expect(screen.getByText(expectedRemoveItemModalText)).toBeInTheDocument();
   });
 
   it('should displays loader when status is loading', () => {
+    const loaderTestId = 'loader';
     const mockProductsState = getMockProductsState({
       postOrderStatus: RequestStatus.Loading,
     });
@@ -76,10 +86,11 @@ describe('Component: BasketPage', () => {
 
     render(withStoreComponent);
 
-    expect(screen.getByTestId(/loader/i)).toBeInTheDocument();
+    expect(screen.getByTestId(loaderTestId)).toBeInTheDocument();
   });
 
   it('should displays success modal when status is success', () => {
+    const expectedSuccessModalText = /спасибо за покупку/i;
     const mockProductsState = getMockProductsState({
       postOrderStatus: RequestStatus.Success,
     });
@@ -90,10 +101,11 @@ describe('Component: BasketPage', () => {
 
     render(withStoreComponent);
 
-    expect(screen.getByText(/спасибо за покупку/i)).toBeInTheDocument();
+    expect(screen.getByText(expectedSuccessModalText)).toBeInTheDocument();
   });
 
   it('should displays error modal when status is failed', () => {
+    const expectedErrorModalText = /Что-то пошло не так/i;
     const mockProductsState = getMockProductsState({
       postOrderStatus: RequestStatus.Failed,
     });
@@ -104,6 +116,6 @@ describe('Component: BasketPage', () => {
 
     render(withStoreComponent);
 
-    expect(screen.getByText(/Что-то пошло не так/i)).toBeInTheDocument();
+    expect(screen.getByText(expectedErrorModalText)).toBeInTheDocument();
   });
 });
