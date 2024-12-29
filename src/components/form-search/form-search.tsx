@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { getAllProducts } from '../../store/products-slice/selectors';
-import { AppRoute } from '../../const/const';
+import { AppRoute, EventKey } from '../../const/const';
 import { Products } from '../../types/types';
 import { useNavigate } from 'react-router-dom';
 import CloseButton from '../close-button/close-button';
@@ -12,6 +12,7 @@ enum CloseButtonOption {
   Type = 'reset',
 }
 
+const SEARCH_RESULT_ITEM_CLASSNAME = 'form-search__select-item';
 const NUMBER_OF_CHARACTERS_TO_SERCH = 3;
 
 const filterProducts = (products: Products, searchString: string) =>
@@ -60,7 +61,7 @@ function FormSearch(): JSX.Element {
     event: React.KeyboardEvent,
     route: string
   ) => {
-    if (event.key === 'Enter') {
+    if (event.key === EventKey.Enter) {
       setSearchInput('');
       navigate(route);
     }
@@ -75,17 +76,17 @@ function FormSearch(): JSX.Element {
     event
   ) => {
     const target = event.target as HTMLElement;
-    if (event.key === 'ArrowUp') {
+    if (event.key === EventKey.ArrowUp) {
       event.preventDefault();
       if (
-        target.classList.contains('form-search__select-item') &&
+        target.classList.contains(SEARCH_RESULT_ITEM_CLASSNAME) &&
         target.previousElementSibling
       ) {
         const previous = target.previousElementSibling as HTMLElement;
         previous.focus();
       }
       if (
-        target.classList.contains('form-search__select-item') &&
+        target.classList.contains(SEARCH_RESULT_ITEM_CLASSNAME) &&
         !target.previousElementSibling
       ) {
         const inputElement = inputRef.current;
@@ -94,7 +95,7 @@ function FormSearch(): JSX.Element {
         }
       }
     }
-    if (event.key === 'ArrowDown') {
+    if (event.key === EventKey.ArrowDown) {
       event.preventDefault();
       if (target === inputRef.current) {
         const firstListItem = ulRef.current?.firstChild;
@@ -104,7 +105,7 @@ function FormSearch(): JSX.Element {
         }
       }
       if (
-        target.classList.contains('form-search__select-item') &&
+        target.classList.contains(SEARCH_RESULT_ITEM_CLASSNAME) &&
         target.nextElementSibling
       ) {
         const next = target.nextElementSibling as HTMLElement;
@@ -154,7 +155,7 @@ function FormSearch(): JSX.Element {
               return (
                 <li
                   key={id}
-                  className="form-search__select-item"
+                  className={SEARCH_RESULT_ITEM_CLASSNAME}
                   tabIndex={0}
                   onClick={() => handleSelectItemClick(route)}
                   onKeyDown={(event) => handleSelectItemEnterKeyDown(event, route)}

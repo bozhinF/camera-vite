@@ -4,6 +4,19 @@ import FilterCheckList from '../filter-check-list/filter-check-list';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 import { HandleFilterChange, Products } from '../../types/types';
 
+type FilterResetParams = {
+  key: keyof FilterState;
+  value: FilterState[keyof FilterState];
+}[];
+
+const FILTER_RESET_PARAMS: FilterResetParams = [
+  { key: 'price', value: null },
+  { key: 'priceUp', value: null },
+  { key: 'category', value: '' },
+  { key: 'type', value: [] },
+  { key: 'level', value: [] },
+] as const;
+
 type FilterProps = {
   filterState: FilterState;
   filteredProducts: Products;
@@ -20,16 +33,7 @@ function Filter({
     .sort((a, b) => a - b);
 
   const handleResetButtonClick = () => {
-    const resetParams: {
-      key: keyof FilterState;
-      value: FilterState[keyof FilterState];
-    }[] = [
-      { key: 'price', value: null },
-      { key: 'priceUp', value: null },
-      { key: 'category', value: '' },
-      { key: 'type', value: [] },
-      { key: 'level', value: [] },
-    ];
+    const resetParams = FILTER_RESET_PARAMS;
     onChange({ ...filterState }, resetParams);
   };
 

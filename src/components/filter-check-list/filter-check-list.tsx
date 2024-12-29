@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react';
 import { FilterOptionsItem, HandleFilterChange } from '../../types/types';
 import { FilterState } from '../../store/filter-slice/filter-slice';
 
+const RADIO_TYPE = 'radio';
+const VIDEOCAMERA_CATEGORY = 'videocamera';
+const CAMERA_TYPE = 'type';
+enum CameraType {
+  Film = 'film',
+  Snapshot = 'snapshot',
+}
+
 type FilterCheckListProps = {
   type: 'radio' | 'checkbox';
   title: string;
@@ -23,7 +31,7 @@ function FilterCheckList({
   const [checkedItems, setCheckedItems] =
     useState<FilterState[keyof FilterState]>(localState);
 
-  const isvideocameraChecked = totalState.category === 'videocamera';
+  const isvideocameraChecked = totalState.category === VIDEOCAMERA_CATEGORY;
 
   useEffect(() => {
     if (!Array.isArray(localState) && localState !== checkedItems) {
@@ -58,18 +66,19 @@ function FilterCheckList({
     item: FilterOptionsItem[number],
     isActive: boolean
   ) => {
-    if (type === 'radio') {
+    if (type === RADIO_TYPE) {
       setCheckedItems(item.value);
-      if (item.value === 'videocamera') {
+      if (item.value === VIDEOCAMERA_CATEGORY) {
         const changedType = totalState.type.filter(
-          (typeItem) => typeItem !== 'film' && typeItem !== 'snapshot'
+          (typeItem) =>
+            typeItem !== CameraType.Film && typeItem !== CameraType.Snapshot
         );
         const options: {
           key: keyof FilterState;
           value: FilterState[keyof FilterState];
         }[] = [
           { key: name, value: item.value },
-          { key: 'type', value: changedType },
+          { key: CAMERA_TYPE, value: changedType },
         ];
         onChange({ ...totalState }, options);
         return;
@@ -124,14 +133,14 @@ function FilterCheckList({
           (Array.isArray(checkedItems) && checkedItems.includes(item.value));
         const isDisabled =
           isvideocameraChecked &&
-          (item.id === 'snapshot' || item.id === 'film');
+          (item.id === CameraType.Snapshot || item.id === CameraType.Film);
         return (
           <div key={item.id} className={`custom-${type} catalog-filter__item`}>
             <label>
               <input
                 type={type}
-                name={type === 'radio' ? name : item.id}
-                {...(type === 'radio' ? { value: item.value } : {})}
+                name={type === RADIO_TYPE ? name : item.id}
+                {...(type === RADIO_TYPE ? { value: item.value } : {})}
                 checked={isActive}
                 onChange={() => handleInputChange(item, isActive)}
                 disabled={isDisabled}
