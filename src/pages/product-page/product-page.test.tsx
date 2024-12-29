@@ -14,7 +14,7 @@ import {
 } from '../../util/mocks';
 import ProductPage from './product-page';
 import { divideNumberByPieces } from '../../util/util';
-import HistoryRouter from '../../components/history-route/history-route';
+import HistoryRouter from '../../components/history-router/history-router';
 import { HelmetProvider } from 'react-helmet-async';
 import { setFilters } from '../../store/filter-slice/filter-slice';
 

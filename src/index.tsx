@@ -6,7 +6,7 @@ import { store } from './store';
 import { fetchAllProducts } from './store/products-slice/thunks';
 import { getLocalBasket } from './services/basket';
 import { setBasket } from './store/products-slice/products-slice';
-import HistoryRouter from './components/history-route/history-route';
+import HistoryRouter from './components/history-router/history-router';
 import browserHistory from './browser-history';
 
 const root = ReactDOM.createRoot(

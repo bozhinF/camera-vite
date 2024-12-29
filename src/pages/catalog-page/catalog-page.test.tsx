@@ -20,7 +20,7 @@ import {
 import { withHistory, withStore } from '../../util/mock-component';
 import CatalogPage from './catalog-page';
 import { render, screen } from '@testing-library/react';
-import HistoryRouter from '../../components/history-route/history-route';
+import HistoryRouter from '../../components/history-router/history-router';
 import { HelmetProvider } from 'react-helmet-async';
 import { setFilters } from '../../store/filter-slice/filter-slice';
 
