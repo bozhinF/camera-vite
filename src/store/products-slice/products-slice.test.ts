@@ -129,7 +129,8 @@ describe('Products Slice', () => {
   });
 
   it('should set "productReviewsStatus" to "Success" and set "productReviews" to array with reviews with "fetchProductReviews.fulfilled"', () => {
-    const reviews = Array.from({ length: 5 }, () => getMockReview());
+    const reviewsCount = 5;
+    const reviews = Array.from({ length: reviewsCount }, getMockReview);
     const expectedState = {
       ...initialState,
       productReviewsStatus: RequestStatus.Success,
@@ -190,15 +191,17 @@ describe('Products Slice', () => {
   });
 
   it('should add item to basket with "addItemToBasket" action', () => {
+    const addItemId = 10;
     const expectedState = {
       ...initialState,
       basket: [10],
     };
-    const result = productsSlice.reducer(undefined, addItemToBasket(10));
+    const result = productsSlice.reducer(undefined, addItemToBasket(addItemId));
     expect(result).toEqual(expectedState);
   });
 
   it('should remove item from basket with "removeItemFromBasket" action', () => {
+    const removeItemId = 2;
     const basket = [1, 2, 2, 3, 3, 3];
     const expectedBasket = [1, 2, 3, 3, 3];
     const state = {
@@ -209,27 +212,36 @@ describe('Products Slice', () => {
       ...initialState,
       basket: expectedBasket,
     };
-    const result = productsSlice.reducer(state, removeItemFromBasket(2));
+    const result = productsSlice.reducer(
+      state,
+      removeItemFromBasket(removeItemId)
+    );
     expect(result).toEqual(expectedState);
   });
 
   it('should call "saveLocalBasket" once with an array of numbers with "updateBasket" action', () => {
     const basket = products.map((item) => item.id);
     const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+    const expectedMockSaveLocalBasketCalledTimes = 1;
 
     productsSlice.reducer(undefined, updateBasket(basket));
 
-    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledTimes(
+      expectedMockSaveLocalBasketCalledTimes
+    );
     expect(mockSaveLocalBasket).toBeCalledWith(basket);
   });
 
   it('should call "saveLocalBasket" once with an array of numbers with "addItemToBasket" action', () => {
     const productId = 11;
     const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+    const expectedMockSaveLocalBasketCalledTimes = 1;
 
     productsSlice.reducer(undefined, addItemToBasket(productId));
 
-    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledTimes(
+      expectedMockSaveLocalBasketCalledTimes
+    );
     expect(mockSaveLocalBasket).toBeCalledWith([productId]);
   });
 
@@ -242,10 +254,13 @@ describe('Products Slice', () => {
       basket,
     };
     const mockSaveLocalBasket = vi.spyOn(basketStorage, 'saveLocalBasket');
+    const expectedMockSaveLocalBasketCalledTimes = 1;
 
     productsSlice.reducer(state, removeItemFromBasket(productId));
 
-    expect(mockSaveLocalBasket).toBeCalledTimes(1);
+    expect(mockSaveLocalBasket).toBeCalledTimes(
+      expectedMockSaveLocalBasketCalledTimes
+    );
     expect(mockSaveLocalBasket).toBeCalledWith(expectedBasket);
   });
 
