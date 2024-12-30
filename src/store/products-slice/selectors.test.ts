@@ -4,6 +4,8 @@ import {
   getAllProducts,
   getAllProductsStatus,
   getBasket,
+  getCouponDiscount,
+  getCouponValidateStatus,
   getPostOrderStatus,
   getProductDetails,
   getProductDetailsStatus,
@@ -27,6 +29,8 @@ describe('ProductSlice selectors', () => {
       productReviews: reviews,
       basket: basket,
       postOrderStatus: RequestStatus.Idle,
+      couponDiscount: 0,
+      couponValidateStatus: RequestStatus.Idle,
     },
   };
 
@@ -66,5 +70,16 @@ describe('ProductSlice selectors', () => {
   it('should return basket', () => {
     const result = getBasket(state);
     expect(result).toEqual(basket);
+  });
+
+  it('should return couponDiscount', () => {
+    const expectedResult = 0;
+    const result = getCouponDiscount(state);
+    expect(result).toEqual(expectedResult);
+  });
+
+  it('should return couponValidateStatus', () => {
+    const result = getCouponValidateStatus(state);
+    expect(result).toEqual(RequestStatus.Idle);
   });
 });

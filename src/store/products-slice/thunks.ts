@@ -1,5 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Order, Product, Products, Reviews } from '../../types/types';
+import {
+  Coupon,
+  CouponResponse,
+  Order,
+  Product,
+  Products,
+  Reviews,
+} from '../../types/types';
 import { AxiosInstance } from 'axios';
 import { Endpoint } from '../../const/const';
 
@@ -38,4 +45,13 @@ export const postOrder = createAsyncThunk<
   { extra: AxiosInstance }
 >('postProduct/order', async ({ order }, { extra: api }) => {
   await api.post(Endpoint.Orders, order);
+});
+
+export const postCoupon = createAsyncThunk<
+  CouponResponse,
+  { coupon: Coupon },
+  { extra: AxiosInstance }
+>('postProduct/coupon', async (coupon, { extra: api }) => {
+  const response = await api.post<CouponResponse>(Endpoint.Coupons, coupon);
+  return response.data;
 });

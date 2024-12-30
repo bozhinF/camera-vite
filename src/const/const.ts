@@ -29,6 +29,7 @@ export enum Endpoint {
   Products = '/cameras',
   Comments = '/cameras/:cameraId/reviews',
   Orders = '/orders',
+  Coupons = '/coupons',
 }
 
 export const FilterOption: FitlerOptions = {

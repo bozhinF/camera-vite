@@ -118,4 +118,33 @@ describe('Component: BasketPage', () => {
 
     expect(screen.getByText(expectedErrorModalText)).toBeInTheDocument();
   });
+
+  it('should render empty basket component wher basket is empty', () => {
+    const epectedEmptyBasketTitleText = 'Корзина пуста';
+    const expectedEmptyBasketText =
+      'Воспользуйтесь поиском, чтобы найти всё, что нужно';
+    const emptyBasketLinkToMainPageText = 'В каталог';
+    const mockStore = getMockStore();
+    const withHistoryComponent = withHistory(<BasketPage />, mockHistory);
+    const { withStoreComponent } = withStore(withHistoryComponent, mockStore);
+    mockHistory.push(AppRoute.Basket);
+
+    render(withStoreComponent);
+
+    expect(
+      screen.getByRole(ElementRole.Heading, {
+        name: epectedEmptyBasketTitleText,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole(ElementRole.Heading, {
+        name: expectedEmptyBasketText,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole(ElementRole.Link, {
+        name: emptyBasketLinkToMainPageText,
+      })
+    ).toBeInTheDocument();
+  });
 });

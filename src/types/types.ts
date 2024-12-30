@@ -85,3 +85,9 @@ export type HandleFilterChange = <
 export type PossibleFilterItemValues<T> = {
   [K in keyof T]: FilterOptionsItem;
 };
+
+export type Coupon = string;
+export type InvalidCouponResponse = {
+  messages: ['Invalid Value'];
+};
+export type CouponResponse = number | InvalidCouponResponse;

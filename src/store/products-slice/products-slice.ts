@@ -5,6 +5,7 @@ import {
   fetchAllProducts,
   fetchProduct,
   fetchProductReviews,
+  postCoupon,
   postOrder,
 } from './thunks';
 import { saveLocalBasket } from '../../services/basket';
@@ -18,6 +19,8 @@ export type ProductsState = {
   productReviews: Reviews;
   basket: number[];
   postOrderStatus: RequestStatus;
+  couponDiscount: number;
+  couponValidateStatus: RequestStatus;
 };
 
 const initialState: ProductsState = {
@@ -29,6 +32,8 @@ const initialState: ProductsState = {
   productReviews: [],
   basket: [],
   postOrderStatus: RequestStatus.Idle,
+  couponDiscount: 0,
+  couponValidateStatus: RequestStatus.Idle,
 };
 
 export const productsSlice = createSlice({
@@ -60,6 +65,10 @@ export const productsSlice = createSlice({
     },
     resetPostOrderStatus(state) {
       state.postOrderStatus = RequestStatus.Idle;
+    },
+    resetCoupon(state) {
+      state.couponDiscount = 0;
+      state.couponValidateStatus = RequestStatus.Idle;
     },
   },
   extraReducers: (builder) =>
@@ -102,6 +111,24 @@ export const productsSlice = createSlice({
       })
       .addCase(postOrder.rejected, (state) => {
         state.postOrderStatus = RequestStatus.Failed;
+      })
+      .addCase(postCoupon.pending, (state) => {
+        state.couponValidateStatus = RequestStatus.Loading;
+      })
+      .addCase(postCoupon.fulfilled, (state, action) => {
+        state.couponValidateStatus = RequestStatus.Success;
+        const payload = action.payload;
+        if (typeof payload === 'number') {
+          state.couponDiscount = payload;
+          state.couponValidateStatus = RequestStatus.Success;
+        } else {
+          state.couponDiscount = 0;
+          state.couponValidateStatus = RequestStatus.Failed;
+        }
+      })
+      .addCase(postCoupon.rejected, (state) => {
+        state.couponValidateStatus = RequestStatus.Failed;
+        state.couponDiscount = 0;
       }),
 });
 
@@ -111,4 +138,5 @@ export const {
   addItemToBasket,
   removeItemFromBasket,
   resetPostOrderStatus,
+  resetCoupon,
 } = productsSlice.actions;

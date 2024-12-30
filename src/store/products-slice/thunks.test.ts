@@ -14,6 +14,7 @@ import {
   fetchAllProducts,
   fetchProduct,
   fetchProductReviews,
+  postCoupon,
   postOrder,
 } from './thunks';
 import thunk from 'redux-thunk';
@@ -175,6 +176,36 @@ describe('Async actions', () => {
       expect(actions).toEqual([
         postOrder.pending.type,
         postOrder.rejected.type,
+      ]);
+    });
+  });
+
+  describe('postCoupon action', () => {
+    it('should dispatch "postCoupon.pending", "postCoupon.fulfilled", when server response 200', async () => {
+      const coupon = { coupon: '111' };
+      mockAxiosAdapter.onPost(Endpoint.Orders).reply(200, 15);
+
+      await store.dispatch(postCoupon(coupon));
+
+      const emmitedActions = store.getActions();
+      const extractedActionsTypes = extractActionsTypes(emmitedActions);
+
+      expect(extractedActionsTypes).toEqual([
+        postCoupon.pending.type,
+        postCoupon.rejected.type,
+      ]);
+    });
+
+    it('should dispatch "postCoupon.pending", "postCoupon.rejected" when server response 400', async () => {
+      const coupon = { coupon: '111' };
+      mockAxiosAdapter.onPost(Endpoint.Orders).reply(400);
+
+      await store.dispatch(postCoupon(coupon));
+      const actions = extractActionsTypes(store.getActions());
+
+      expect(actions).toEqual([
+        postCoupon.pending.type,
+        postCoupon.rejected.type,
       ]);
     });
   });

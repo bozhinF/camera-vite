@@ -28,3 +28,11 @@ export const getPostOrderStatus = (
 
 export const getBasket = (state: Pick<State, NameSpace.Products>): number[] =>
   state[NameSpace.Products].basket;
+
+export const getCouponDiscount = (
+  state: Pick<State, NameSpace.Products>
+): number => state[NameSpace.Products].couponDiscount;
+
+export const getCouponValidateStatus = (
+  state: Pick<State, NameSpace.Products>
+): RequestStatus => state[NameSpace.Products].couponValidateStatus;

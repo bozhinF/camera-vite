@@ -66,11 +66,10 @@ describe('Application Routing', () => {
     const discountText = /Скидка:/i;
     const toPayText = /К оплате:/i;
     const placeOrderText = /Оформить заказ/i;
+    const mockStore = getMockStore();
+    mockStore[NameSpace.Products].basket = [1];
     const withHistoryComponent = withHistory(<App />, mockHistory);
-    const { withStoreComponent } = withStore(
-      withHistoryComponent,
-      getMockStore()
-    );
+    const { withStoreComponent } = withStore(withHistoryComponent, mockStore);
     mockHistory.push(AppRoute.Basket);
 
     render(withStoreComponent);

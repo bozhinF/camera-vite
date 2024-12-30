@@ -4,6 +4,7 @@ import {
   addItemToBasket,
   productsSlice,
   removeItemFromBasket,
+  resetCoupon,
   resetPostOrderStatus,
   setBasket,
   updateBasket,
@@ -12,6 +13,7 @@ import {
   fetchAllProducts,
   fetchProduct,
   fetchProductReviews,
+  postCoupon,
   postOrder,
 } from './thunks';
 import * as basketStorage from '../../services/basket';
@@ -28,6 +30,8 @@ describe('Products Slice', () => {
     productReviews: [],
     basket: [],
     postOrderStatus: RequestStatus.Idle,
+    couponDiscount: 0,
+    couponValidateStatus: RequestStatus.Idle,
   };
 
   it('should return initial state with empty action', () => {
@@ -170,6 +174,37 @@ describe('Products Slice', () => {
     expect(result).toEqual(expectedState);
   });
 
+  it('should set "couponValidateStatus" to "Loading" with "postCoupon.pending"', () => {
+    const expectedState = {
+      ...initialState,
+      couponValidateStatus: RequestStatus.Loading,
+    };
+    const result = productsSlice.reducer(undefined, postCoupon.pending);
+    expect(result).toEqual(expectedState);
+  });
+
+  it('should set "couponValidateStatus" to "Failed" with "postCoupon.rejected"', () => {
+    const expectedState = {
+      ...initialState,
+      couponValidateStatus: RequestStatus.Failed,
+    };
+    const result = productsSlice.reducer(undefined, postCoupon.rejected);
+    expect(result).toEqual(expectedState);
+  });
+
+  it('should set "couponValidateStatus" to "Success" with "postCoupon.fulfilled"', () => {
+    const expectedState = {
+      ...initialState,
+      couponDiscount: 15,
+      couponValidateStatus: RequestStatus.Success,
+    };
+    const result = productsSlice.reducer(
+      undefined,
+      postCoupon.fulfilled(15, '', { coupon: '15' })
+    );
+    expect(result).toEqual(expectedState);
+  });
+
   it('should update basket with "updateBasket" action', () => {
     const basket = products.map((item) => item.id);
     const expectedState = {
@@ -276,6 +311,23 @@ describe('Products Slice', () => {
     };
 
     const result = productsSlice.reducer(state, resetPostOrderStatus());
+    expect(result).toEqual(expectedState);
+  });
+
+  it('should reset couponValidateStatus and couponDiscount with "resetCoupon" action', () => {
+    const state = {
+      ...initialState,
+      couponDiscount: 15,
+      couponValidateStatus: RequestStatus.Success,
+    };
+
+    const expectedState = {
+      ...initialState,
+      couponDiscount: 0,
+      couponValidateStatus: RequestStatus.Idle,
+    };
+
+    const result = productsSlice.reducer(state, resetCoupon());
     expect(result).toEqual(expectedState);
   });
 });

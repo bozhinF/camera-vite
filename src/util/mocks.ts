@@ -78,6 +78,8 @@ export const getMockStore = (initialState?: Partial<State>): State => ({
     productReviews: [],
     basket: [],
     postOrderStatus: RequestStatus.Idle,
+    couponDiscount: 0,
+    couponValidateStatus: RequestStatus.Idle,
   },
   ...(initialState ?? {}),
 });
@@ -108,5 +110,7 @@ export const getMockProductsState = (
   productReviews: [],
   basket: [],
   postOrderStatus: RequestStatus.Idle,
+  couponDiscount: 0,
+  couponValidateStatus: RequestStatus.Idle,
   ...initial,
 });
